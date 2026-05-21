@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="MY WORKOUT">
+<meta name="theme-color" content="#0f0f0f">
+<meta name="mobile-web-app-capable" content="yes">
+<title>MY WORKOUT</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏋️</text></svg>">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--bg:#0f0f0f;--card:#1a1a1a;--border:#2a2a2a;--text:#e8e8e8;--dim:#888;--accent:#4ade80;--ad:#22633a;--push:#f472b6;--pull:#60a5fa;--legs:#fbbf24;--run:#4ade80;--danger:#ef4444;--warn:#f59e0b}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,'Pretendard',sans-serif;min-height:100dvh;padding-bottom:80px;overflow-x:hidden}
+input[type=number]{-moz-appearance:textfield}input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{-webkit-appearance:none}
+button{font-family:inherit}
+.tabs{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom)}
+.tab{flex:1;padding:8px 0 6px;background:none;border:none;color:var(--dim);font-size:9px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;font-weight:600}.tab.active{color:var(--accent)}.tab-icon{font-size:18px}
+.page{display:none;padding:16px 16px 0}.page.active{display:block}
+.hdr{display:flex;justify-content:space-between;align-items:center;padding:8px 0 16px}
+.hdr h1{font-size:20px;font-weight:800;letter-spacing:-0.5px}.hdr-sub{font-size:11px;color:var(--dim);margin-top:2px}
+.wn{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.wn button{background:none;border:none;color:var(--dim);font-size:20px;cursor:pointer;padding:4px 10px}
+.bt{background:var(--ad)!important;border:1px solid var(--accent)!important;border-radius:6px;color:var(--accent)!important;font-size:11px!important;padding:4px 12px!important;font-weight:700}
+.wg{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:16px}
+.dc{background:transparent;border:1px solid transparent;border-radius:10px;padding:8px 0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px}
+.dc.sel{background:var(--card)}.dc.tod{border-color:var(--border)}
+.dn{font-size:10px;color:var(--dim);font-weight:500}.dnum{font-size:15px;font-weight:400}
+.dc.sel .dnum,.dc.tod .dnum{font-weight:700}.ddot{width:6px;height:6px;border-radius:3px}
+.wh{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:8px;display:flex;align-items:center;gap:12px}
+.wi{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px}
+.wtl{font-size:18px;font-weight:700}.wsu{font-size:12px;color:var(--dim)}
+.ec{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:6px}
+.ec.ta{border-color:var(--accent);box-shadow:0 0 12px rgba(74,222,128,0.15)}
+.et{display:flex;align-items:center;gap:8px}.en{font-size:11px;color:var(--dim);font-weight:600;min-width:16px}
+.enm{font-size:14px;font-weight:600;flex:1}.em{display:flex;gap:12px;margin:6px 0 0 24px}.em span{font-size:12px;color:var(--dim)}
+.sg{margin:10px 0 0 24px;display:flex;flex-direction:column;gap:4px}
+.sr{display:flex;align-items:center;gap:6px}.sl{font-size:11px;color:var(--dim);min-width:36px;font-weight:600}
+.si{width:56px;text-align:center;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:14px;font-weight:600;padding:6px 0;outline:none}.si:focus{border-color:var(--accent)}
+.su{font-size:10px;color:var(--dim);min-width:20px}
+.sc{width:28px;height:28px;border-radius:6px;background:var(--bg);border:1px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--accent);flex-shrink:0}.sc.done{background:var(--ad);border-color:var(--accent)}
+.tb{background:var(--ad);border:1px solid var(--accent);border-radius:8px;color:var(--accent);font-size:12px;font-weight:700;padding:6px 10px;cursor:pointer;margin-left:auto;white-space:nowrap}
+.ti{background:var(--ad);border:1px solid var(--accent);border-radius:8px;color:var(--accent);font-size:14px;font-weight:800;padding:6px 12px;margin-left:auto;font-variant-numeric:tabular-nums;animation:pu 1s infinite}
+.td{background:rgba(239,68,68,0.15);border:1px solid var(--danger);border-radius:8px;color:var(--danger);font-size:12px;font-weight:800;padding:6px 12px;margin-left:auto}
+@keyframes pu{0%,100%{opacity:1}50%{opacity:0.7}}
+.tbar{height:3px;background:var(--border);border-radius:2px;margin-top:8px;overflow:hidden}.tbf{height:100%;background:var(--accent);transition:width 1s linear;border-radius:2px}
+.tbn{position:fixed;top:0;left:0;right:0;background:var(--ad);border-bottom:1px solid var(--accent);padding:8px 16px;display:flex;justify-content:space-between;align-items:center;z-index:150}
+.tbt{font-size:13px;font-weight:700;color:var(--accent)}.tbti{font-size:20px;font-weight:800;color:var(--accent);font-variant-numeric:tabular-nums}
+.tbs{background:none;border:1px solid var(--accent);border-radius:6px;color:var(--accent);font-size:11px;padding:4px 10px;cursor:pointer;font-weight:600}
+.rc{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px}
+.rw{margin-top:12px;padding:8px 12px;background:#1e293b;border-radius:8px;font-size:12px;color:#94a3b8}
+.up{margin-top:20px}.up h3{font-size:13px;font-weight:700;color:var(--dim);margin-bottom:10px;letter-spacing:0.5px}
+.ui{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:4px;cursor:pointer;width:100%}
+.ud{width:8px;height:8px;border-radius:4px;flex-shrink:0}.udt{font-size:12px;color:var(--dim);min-width:70px}.unm{font-size:14px;font-weight:600}
+.eb{display:flex;gap:8px;margin-bottom:8px}
+.ebt{background:none;border:1px solid var(--border);border-radius:8px;color:var(--dim);font-size:12px;padding:6px 12px;cursor:pointer;font-weight:600}
+.ebt.active{border-color:var(--warn);color:var(--warn);background:rgba(245,158,11,0.1)}.ebt.save{border-color:var(--accent);color:var(--accent);background:var(--ad)}
+.ef{background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:13px;padding:6px 8px;outline:none;width:100%}.ef:focus{border-color:var(--warn)}.efs{width:60px;text-align:center}
+.erw{display:flex;gap:6px;align-items:center;margin-top:8px;flex-wrap:wrap}.elb{font-size:10px;color:var(--dim);min-width:32px;font-weight:600}
+.edl{background:none;border:1px solid var(--danger);border-radius:6px;color:var(--danger);font-size:11px;padding:4px 8px;cursor:pointer;font-weight:600;white-space:nowrap}
+.emv{background:none;border:1px solid var(--border);border-radius:6px;color:var(--dim);font-size:14px;padding:2px 8px;cursor:pointer}
+.adb{background:var(--card);border:2px dashed var(--border);border-radius:12px;padding:14px;text-align:center;color:var(--dim);font-size:13px;font-weight:600;cursor:pointer;width:100%;margin-bottom:6px}
+.nwt{background:none;border:1px solid var(--border);border-radius:6px;color:var(--dim);font-size:10px;padding:3px 6px;cursor:pointer}.nwt.on{border-color:var(--warn);color:var(--warn)}
+.pb{border-radius:8px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;border:none}
+.pbd{background:rgba(245,158,11,0.15);color:var(--warn);border:1px solid var(--warn)!important}
+.pbu{background:var(--ad);color:var(--accent);border:1px solid var(--accent)!important}
+.bwi{display:flex;gap:8px;margin-bottom:16px}.bwi input{flex:1;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:16px;padding:12px;outline:none}.bwi input:focus{border-color:var(--accent)}
+.bwi button{background:var(--accent);color:#000;border:none;border-radius:8px;padding:12px 20px;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap}
+.bws{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px}.bwst{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center}
+.bwsv{font-size:22px;font-weight:800}.bwsl{font-size:10px;color:var(--dim);margin-top:4px;font-weight:600}
+.cb{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:16px}
+.bwl{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.bwlh{padding:12px 16px;font-size:13px;font-weight:700;color:var(--dim);border-bottom:1px solid var(--border)}
+.bwli{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid var(--border)}.bwli:last-child{border-bottom:none}
+.bwd{background:none;border:none;color:var(--dim);font-size:16px;cursor:pointer;padding:4px}
+.so{position:fixed;top:0;left:0;right:0;bottom:0;background:var(--bg);z-index:300;display:flex;align-items:center;justify-content:center}
+.soc{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px;max-width:340px;width:90%;text-align:center}
+.soc h2{font-size:20px;font-weight:700;margin:8px 0}.soc p{font-size:13px;color:var(--dim);line-height:1.5;margin-bottom:20px}
+.soc input[type=date]{background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:10px 16px;font-size:16px;width:100%;margin-bottom:16px;outline:none}
+.soc button{background:var(--accent);color:#000;border:none;border-radius:8px;padding:12px 0;font-size:15px;font-weight:700;width:100%;cursor:pointer}
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:var(--ad);border:1px solid var(--accent);color:var(--accent);font-size:12px;font-weight:700;padding:6px 16px;border-radius:8px;z-index:250;opacity:0;transition:opacity 0.3s;pointer-events:none}.toast.show{opacity:1}
+.ety{background:var(--card);border-radius:12px;padding:24px;text-align:center;border:1px solid var(--border);color:var(--dim);font-size:14px;margin-top:12px}
+.stb{background:none;border:1px solid var(--border);border-radius:6px;color:var(--dim);font-size:11px;padding:4px 8px;cursor:pointer}
+.cov{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);z-index:250;display:flex;align-items:center;justify-content:center}
+.cbox{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;max-width:300px;width:90%;text-align:center}
+.cbox p{font-size:14px;margin-bottom:16px;line-height:1.5}.cbts{display:flex;gap:8px}
+.cbts button{flex:1;padding:10px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;border:none}
+.cbn{background:var(--card);color:var(--text);border:1px solid var(--border)!important}.cby{background:var(--danger);color:#fff}
+.dhc{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:10px}
+.dht{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.dhn{font-size:15px;font-weight:700}.dhct{font-size:24px;font-weight:800;font-variant-numeric:tabular-nums}.dhm{font-size:12px;color:var(--dim);font-weight:600}
+.dhb{width:100%;height:8px;background:var(--bg);border-radius:4px;overflow:hidden;margin:10px 0}.dhf{height:100%;border-radius:4px;transition:width 0.3s}
+.dhbt{width:100%;padding:14px;border-radius:10px;border:none;font-size:16px;font-weight:800;cursor:pointer;transition:transform 0.1s}.dhbt:active{transform:scale(0.97)}.dhbt.mx{opacity:0.4;cursor:not-allowed}
+.dhud{background:none;border:1px solid var(--border);border-radius:6px;color:var(--dim);font-size:11px;padding:4px 10px;cursor:pointer;font-weight:600}
+.dhcp{font-size:11px;color:var(--accent);background:var(--ad);padding:3px 8px;border-radius:4px;font-weight:700}
+.dhdnv{display:flex;justify-content:center;align-items:center;gap:16px;margin-bottom:16px}
+.dhdnv button{background:none;border:none;color:var(--dim);font-size:20px;cursor:pointer;padding:4px 10px}
+.dhdl{font-size:16px;font-weight:700;min-width:140px;text-align:center}
+.dhsk{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:16px;text-align:center}
+.dhskn{font-size:36px;font-weight:800;color:var(--accent)}.dhskl{font-size:12px;color:var(--dim);font-weight:600;margin-top:4px}
+.sess{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:8px}
+.sess-time{font-size:28px;font-weight:800;font-variant-numeric:tabular-nums;text-align:center;margin:8px 0}
+.sess-btns{display:flex;gap:8px;justify-content:center}
+.sess-btn{padding:10px 20px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;border:none}
+.sess-start{background:var(--accent);color:#000}
+.sess-rest{background:rgba(245,158,11,0.2);color:var(--warn);border:1px solid var(--warn)!important}
+.sess-resume{background:var(--ad);color:var(--accent);border:1px solid var(--accent)!important}
+.sess-end{background:rgba(239,68,68,0.15);color:var(--danger);border:1px solid var(--danger)!important}
+.sess-stat{display:flex;justify-content:space-around;margin-top:10px;font-size:12px;color:var(--dim)}
+.sess-stat span{text-align:center}.sess-stat strong{display:block;font-size:16px;color:var(--text);font-weight:700}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:16px}
+.cal-hdr{text-align:center;font-size:10px;color:var(--dim);font-weight:600;padding:4px 0}
+.cal-day{text-align:center;padding:6px 2px;border-radius:8px;cursor:pointer;font-size:12px;min-height:36px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.cal-day.has{background:var(--card)}.cal-day.csel{border:1px solid var(--accent)}.cal-day.empty{cursor:default}
+.cal-dots{display:flex;gap:2px}.cal-dot{width:4px;height:4px;border-radius:2px}
+.cal-nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.cal-nav button{background:none;border:none;color:var(--dim);font-size:18px;cursor:pointer;padding:4px 10px}
+.cal-nav span{font-size:16px;font-weight:700}
+.hist-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px}
+.hist-title{font-size:14px;font-weight:700;margin-bottom:4px}.hist-detail{font-size:12px;color:var(--dim)}
+.hist-btns{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.hist-btn{background:none;border:1px solid var(--border);border-radius:6px;color:var(--dim);font-size:11px;padding:4px 10px;cursor:pointer;font-weight:600}
+.hist-btn.active{border-color:var(--accent);color:var(--accent);background:var(--ad)}
+/* Goals */
+.goals{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px}
+.goals-title{font-size:13px;font-weight:700;color:var(--dim);margin-bottom:10px}
+.goal-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}.goal-row:last-child{margin-bottom:0}
+.goal-name{font-size:12px;font-weight:600;min-width:56px}
+.goal-bar{flex:1;height:6px;background:var(--bg);border-radius:3px;overflow:hidden}
+.goal-fill{height:100%;border-radius:3px;transition:width 0.3s}
+.goal-nums{font-size:11px;color:var(--dim);font-weight:600;min-width:80px;text-align:right;font-variant-numeric:tabular-nums}
+.goal-pct{font-size:10px;font-weight:700;min-width:32px;text-align:right}
+.prog-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;margin-left:8px}
+.prog-up{background:var(--ad);color:var(--accent);border:1px solid var(--accent)}
+.prog-keep{background:rgba(96,165,250,0.15);color:var(--pull);border:1px solid var(--pull)}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const DC=[
+{key:"push-a",label:"Push A",type:"weight",sub:"벤치프레스 중심"},
+{key:"legs-a",label:"Legs A",type:"weight",sub:"바벨 스쿼트 중심"},
+{key:"pull-a",label:"Pull A",type:"weight",sub:"고중량 등 + 이두"},
+{key:"rest",label:"러닝 Only",type:"rest",sub:"10km 러닝"},
+{key:"push-b",label:"Push B",type:"weight",sub:"OHP 중심"},
+{key:"legs-b",label:"Legs B",type:"weight",sub:"데드리프트 중심"},
+{key:"pull-b",label:"Pull B",type:"weight",sub:"볼륨 등 + 이두"},
+{key:"rest",label:"러닝 Only",type:"rest",sub:"10km 러닝"}];
+const DW={
+"push-a":[{id:"pa1",name:"바벨 벤치프레스",sets:5,reps:"5-8",rest:180,defaultW:60,big4:"bench"},{id:"pa2",name:"스미스 인클라인 프레스",sets:4,reps:"8-10",rest:120,defaultW:35},{id:"pa3",name:"펙덱 플라이",sets:4,reps:"10-12",rest:90,defaultW:0},{id:"pa4",name:"케이블 레터럴 레이즈",sets:4,reps:"12-15",rest:90,defaultW:0},{id:"pa5",name:"케이블 푸시다운 (스트레이트 바)",sets:3,reps:"10-12",rest:90,defaultW:0},{id:"pa6",name:"케이블 오버헤드 익스텐션 (로프)",sets:3,reps:"10-12",rest:90,defaultW:0},{id:"pa7",name:"AB 슬라이드",sets:4,reps:"15",rest:90,defaultW:0,noWeight:true}],
+"push-b":[{id:"pb0",name:"바벨 오버헤드 프레스",sets:4,reps:"6-10",rest:150,defaultW:30,big4:"ohp"},{id:"pb1",name:"체스트 프레스 머신",sets:4,reps:"8-12",rest:120,defaultW:0},{id:"pb3",name:"케이블 크로스오버",sets:4,reps:"12-15",rest:90,defaultW:0},{id:"pb4",name:"케이블 레터럴 레이즈",sets:4,reps:"15-20",rest:90,defaultW:0},{id:"pb5",name:"딥스 머신",sets:4,reps:"10-12",rest:90,defaultW:0},{id:"pb6",name:"케이블 푸시다운 (로프)",sets:3,reps:"12-15",rest:90,defaultW:0},{id:"pb7",name:"AB 슬라이드",sets:4,reps:"15",rest:90,defaultW:0,noWeight:true}],
+"pull-a":[{id:"la1",name:"T-bar 로우",sets:5,reps:"5-8",rest:180,defaultW:80},{id:"la2",name:"케이블 랫 풀다운",sets:4,reps:"8-12",rest:120,defaultW:50},{id:"la3",name:"시티드 케이블 로우",sets:4,reps:"10-12",rest:120,defaultW:40},{id:"la4",name:"리버스 펙덱 머신",sets:4,reps:"12-15",rest:90,defaultW:15},{id:"la5",name:"케이블 바이셉 컬 (스트레이트 바)",sets:3,reps:"10-12",rest:90,defaultW:20},{id:"la6",name:"케이블 해머 컬 (로프)",sets:3,reps:"10-12",rest:90,defaultW:30},{id:"la7",name:"AB 슬라이드",sets:4,reps:"15",rest:90,defaultW:0,noWeight:true}],
+"pull-b":[{id:"lb1",name:"스미스 벤트오버 로우 (언더핸드)",sets:4,reps:"8-10",rest:120,defaultW:0},{id:"lb2",name:"클로즈그립 랫 풀다운",sets:4,reps:"10-12",rest:120,defaultW:0},{id:"lb3",name:"스트레이트 암 케이블 풀다운",sets:3,reps:"12-15",rest:90,defaultW:0},{id:"lb4",name:"리버스 펙덱 머신",sets:4,reps:"15-20",rest:90,defaultW:0},{id:"lb5",name:"케이블 바이셉 컬 (EZ바)",sets:3,reps:"12-15",rest:90,defaultW:0},{id:"lb6",name:"케이블 리버스 컬 (오버핸드)",sets:3,reps:"12-15",rest:90,defaultW:0},{id:"lb7",name:"AB 슬라이드",sets:4,reps:"15",rest:90,defaultW:0,noWeight:true}],
+"legs-a":[{id:"ga1",name:"바벨 백 스쿼트",sets:5,reps:"5-8",rest:180,defaultW:80,big4:"squat"},{id:"ga2",name:"레그 프레스",sets:4,reps:"10-12",rest:120,defaultW:140},{id:"ga3",name:"레그 익스텐션",sets:4,reps:"12-15",rest:90,defaultW:60},{id:"ga4",name:"라잉 레그 컬",sets:3,reps:"10-12",rest:90,defaultW:35},{id:"ga5",name:"스탠딩 카프 레이즈 (스미스)",sets:4,reps:"12-15",rest:60,defaultW:60},{id:"ga6",name:"AB 슬라이드",sets:4,reps:"15",rest:90,defaultW:0,noWeight:true}],
+"legs-b":[{id:"gb0",name:"컨벤셔널 데드리프트",sets:5,reps:"5-8",rest:180,defaultW:100,big4:"dead"},{id:"gb1",name:"스미스 스쿼트",sets:4,reps:"8-10",rest:120,defaultW:0},{id:"gb3",name:"레그 컬",sets:4,reps:"12-15",rest:90,defaultW:0},{id:"gb4",name:"레그 익스텐션",sets:3,reps:"12-15",rest:90,defaultW:0},{id:"gb5",name:"시티드 카프 레이즈",sets:4,reps:"15-20",rest:60,defaultW:30},{id:"gb6",name:"AB 슬라이드",sets:4,reps:"15",rest:90,defaultW:0,noWeight:true}]};
+const GOALS={bench:{name:"벤치",start:60,target:100,color:"var(--push)",exId:"pa1"},squat:{name:"스쿼트",start:80,target:120,color:"var(--legs)",exId:"ga1"},dead:{name:"데드",start:100,target:150,color:"var(--pull)",exId:"gb0"},ohp:{name:"OHP",start:30,target:40,color:"var(--warn)",exId:"pb0"}};
+const HAB=[{id:"h1",name:"행잉 레그 레이즈",emoji:"🦵",max:100,step:20,color:"var(--push)"},{id:"h2",name:"딥스",emoji:"💪",max:50,step:10,color:"var(--pull)"},{id:"h3",name:"풀업",emoji:"🏋️",max:50,step:10,color:"var(--legs)"},{id:"h4",name:"푸쉬업",emoji:"🫸",max:100,step:20,color:"var(--accent)"},{id:"h5",name:"덤벨컬",emoji:"💪",max:50,step:10,color:"var(--warn)"}];
+const DK=["일","월","화","수","목","금","토"];
+let S={sd:null,sel:new Date(),wo:0,tab:"workout",wt:{},logs:{},bw:[],wks:null,em:false,tEnd:0,tExId:null,tSet:-1,tRest:0,tTo:null,tiv:null,actx:null,setup:false,cfm:null,idc:1000,hab:{},hDate:new Date(),pass:[],sess:{},calMo:new Date().getMonth(),calYr:new Date().getFullYear(),calSel:null,hist:{}};
+const sv=(k,v)=>{try{localStorage.setItem("mw_"+k,JSON.stringify(v))}catch(e){}};
+const ld=k=>{try{const v=localStorage.getItem("mw_"+k);return v?JSON.parse(v):null}catch(e){return null}};
+function init(){const v=ld("ver");if(v!==6){sv("ver",6);sv("config",null)}
+const c=ld("config");if(c?.startDate)S.sd=pD(c.startDate);else S.setup=true;
+S.wt=ld("wt")||{};S.logs=ld("logs")||{};S.bw=ld("bw")||[];S.wks=ld("cwk6")||JSON.parse(JSON.stringify(DW));
+S.idc=ld("idc")||1000;S.hab=ld("habits")||{};S.pass=ld("pass")||[];S.sess=ld("sess")||{};S.hist=ld("hist")||{};
+if('Notification'in window&&Notification.permission==='default')try{Notification.requestPermission()}catch(e){}}
+const swk=()=>{sv("cwk6",S.wks);toast("루틴 저장됨")};const swt=()=>sv("wt",S.wt);const slg=()=>sv("logs",S.logs);const sbw=()=>sv("bw",S.bw);const scf=()=>sv("config",{startDate:dS(S.sd)});const shb=()=>sv("habits",S.hab);const sps=()=>sv("pass",S.pass);const sse=()=>sv("sess",S.sess);const shi=()=>sv("hist",S.hist);
+function nid(){S.idc++;sv("idc",S.idc);return"ex"+S.idc}
+const dS=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+const pD=s=>{const[y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d)};
+const dd=(a,b)=>Math.floor((new Date(b.getFullYear(),b.getMonth(),b.getDate())-new Date(a.getFullYear(),a.getMonth(),a.getDate()))/864e5);
+const fR=s=>s>=120?`${s/60}분`:s>=60?`${Math.floor(s/60)}분${s%60?" "+s%60+"초":""}`:`${s}초`;
+const tC=k=>{if(!k)return"var(--dim)";if(k.startsWith("push"))return"var(--push)";if(k.startsWith("pull"))return"var(--pull)";if(k.startsWith("legs"))return"var(--legs)";return"var(--run)"};
+function gW(d){if(!S.sd)return null;const df=dd(S.sd,d);if(df<0)return null;const ds=dS(d);if(S.pass.includes(ds))return{type:"pass",label:"PASS",key:"pass",sub:"운동 없음"};const pb=S.pass.filter(p=>p>=dS(S.sd)&&p<ds).length;return DC[(df-pb)%DC.length]}
+function gL(d,wk,eid,si){const k=dS(d)+"_"+wk;return S.logs[k]?.[eid]?.[si]||null}
+function sL(d,wk,eid,si,data){const k=dS(d)+"_"+wk;if(!S.logs[k])S.logs[k]={};if(!S.logs[k][eid])S.logs[k][eid]={};S.logs[k][eid][si]=data;slg()}
+function getH(d,h){const k=dS(d);return S.hab[k]?.[h]||0}
+function addH(d,h,s,m){const k=dS(d);if(!S.hab[k])S.hab[k]={};S.hab[k][h]=Math.min((S.hab[k][h]||0)+s,m);shb();R()}
+function undoH(d,h,s){const k=dS(d);if(!S.hab[k])return;S.hab[k][h]=Math.max(0,(S.hab[k][h]||0)-s);shb();R()}
+function getStrk(){let s=0;const d=new Date();for(let i=0;i<365;i++){const c=new Date(d);c.setDate(d.getDate()-i);const k=dS(c);const dd=S.hab[k];if(!dd)break;if(HAB.every(h=>(dd[h.id]||0)>=h.max))s++;else break}return s}
+function getSess(d){return S.sess[dS(d)]||null}
+function startSess(d){S.sess[dS(d)]={start:Date.now(),rests:[],end:null,state:"active"};sse();R()}
+function restSess(d){const s=S.sess[dS(d)];if(!s||s.state!=="active")return;s.rests.push({start:Date.now(),end:null});s.state="resting";sse();R()}
+function resumeSess(d){const s=S.sess[dS(d)];if(!s||s.state!=="resting")return;const r=s.rests[s.rests.length-1];if(r)r.end=Date.now();s.state="active";sse();R()}
+function endSess(d){const k=dS(d),s=S.sess[k];if(!s)return;if(s.state==="resting"){const r=s.rests[s.rests.length-1];if(r)r.end=Date.now()}s.end=Date.now();s.state="done";sse();const wk=gW(d);if(wk&&wk.key!=="pass"){S.hist[k]={workout:wk.key,label:wk.label};shi()}R()}
+function sessEl(s){return Math.floor(((s.end||Date.now())-s.start)/1000)}
+function sessRt(s){return s.rests.reduce((t,r)=>t+Math.floor(((r.end||Date.now())-r.start)/1000),0)}
+function fmt(s){const h=Math.floor(s/3600),m=Math.floor(s%3600/60),sc=s%60;return h>0?`${h}:${String(m).padStart(2,"0")}:${String(sc).padStart(2,"0")}`:`${m}:${String(sc).padStart(2,"0")}`}
+
+// Goals: get current working weight for a big4 lift
+function getGoalW(key){const g=GOALS[key];if(!g)return g.start;return S.wt[g.exId]!==undefined?S.wt[g.exId]:(DW[Object.keys(DW).find(k=>DW[k].some(e=>e.id===g.exId))]?.find(e=>e.id===g.exId)?.defaultW||0)}
+function goalPct(key){const g=GOALS[key],cur=getGoalW(key);return Math.min(100,Math.max(0,(cur-g.start)/(g.target-g.start)*100))}
+
+// Check if ready for +5kg (all sets at rep upper bound in most recent log)
+function checkReady(exId,wkKey){
+const ex=S.wks[wkKey]?.find(e=>e.id===exId);if(!ex)return false;
+const repMax=parseInt(ex.reps.split("-").pop())||parseInt(ex.reps);
+// Find most recent log for this exercise
+const logKeys=Object.keys(S.logs).filter(k=>k.endsWith("_"+wkKey));
+if(!logKeys.length)return false;
+logKeys.sort().reverse();
+for(const lk of logKeys){const exLog=S.logs[lk][exId];if(!exLog)continue;
+let allHit=true;
+for(let s=0;s<ex.sets;s++){const sl=exLog[s];if(!sl||!sl.reps||sl.reps<repMax){allHit=false;break}}
+return allHit}
+return false}
+
+function playAlarm(){try{const ctx=S.actx||new(window.AudioContext||window.webkitAudioContext)();S.actx=ctx;if(ctx.state==='suspended')ctx.resume();
+for(let r=0;r<3;r++){for(let i=0;i<3;i++){const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.frequency.value=i%2===0?880:660;o.type='square';g.gain.value=0.15;const t=r*1.2+i*0.25;o.start(ctx.currentTime+t);o.stop(ctx.currentTime+t+0.15)}}}catch(e){}}
+function timerDone(){clearInterval(S.tiv);clearTimeout(S.tTo);playAlarm();try{navigator.vibrate?.([200,100,200,100,200])}catch(e){}
+if('Notification'in window&&Notification.permission==='granted')try{new Notification('MY WORKOUT',{body:'휴식 끝! 다음 세트 준비'})}catch(e){}
+S.tEnd=-1;R();setTimeout(()=>{S.tEnd=0;S.tExId=null;S.tSet=-1;R()},3500)}
+function startT(sec,exId,si){if(!S.actx)try{S.actx=new(window.AudioContext||window.webkitAudioContext)()}catch(e){}
+S.tEnd=Date.now()+sec*1000;S.tExId=exId;S.tSet=si;S.tRest=sec;clearTimeout(S.tTo);clearInterval(S.tiv);
+S.tTo=setTimeout(()=>{if(S.tEnd>0)timerDone()},sec*1000);S.tiv=setInterval(()=>{if(S.tEnd>0){if(Math.ceil((S.tEnd-Date.now())/1000)<=0)timerDone();else R()}},1000);R()}
+function stopT(){clearInterval(S.tiv);clearTimeout(S.tTo);S.tEnd=0;S.tExId=null;S.tSet=-1;R()}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&S.tEnd>0){if(Math.ceil((S.tEnd-Date.now())/1000)<=0)timerDone();else R()}});
+function tRem(){return S.tEnd>0?Math.max(0,Math.ceil((S.tEnd-Date.now())/1000)):0}
+function tPct(){return S.tRest>0&&S.tEnd>0?(tRem()/S.tRest*100):0}
+function toast(m){const t=document.getElementById("toast");if(t){t.textContent=m+" ✓";t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1200)}}
+
+function R(){const a=document.getElementById("app");let h=`<div class="toast" id="toast"></div>`;
+if(S.setup){h+=`<div class="so"><div class="soc"><div style="font-size:32px;margin-bottom:8px">🏋️</div><h2>운동 시작일 설정</h2><p>새 프로그램의 첫 번째 운동 날짜를 선택하세요</p><input type="date" id="sd-in" value="${dS(new Date())}"><button id="sd-btn">시작하기</button></div></div>`;a.innerHTML=h;document.getElementById("sd-btn")?.addEventListener("click",()=>{const v=document.getElementById("sd-in").value;if(v){S.sd=pD(v);S.setup=false;scf();R()}});return}
+if(S.tEnd!==0){const rem=tRem();h+=`<div class="tbn"><span class="tbt">⏱ 휴식</span><span class="tbti" style="color:${S.tEnd===-1?"var(--danger)":"var(--accent)"}">${S.tEnd===-1?"완료!":`${Math.floor(rem/60)}:${String(rem%60).padStart(2,"0")}`}</span><button class="tbs" id="tb-stop">${S.tEnd===-1?"닫기":"중지"}</button></div><div style="height:44px"></div>`}
+if(S.cfm)h+=`<div class="cov"><div class="cbox"><p>${S.cfm.msg}</p><div class="cbts"><button class="cbn" id="cn">취소</button><button class="cby" id="cy">확인</button></div></div></div>`;
+h+=`<div class="page ${S.tab==="workout"?"active":""}">${rWK()}</div>`;
+h+=`<div class="page ${S.tab==="daily"?"active":""}">${rDH()}</div>`;
+h+=`<div class="page ${S.tab==="cal"?"active":""}">${rCal()}</div>`;
+h+=`<div class="page ${S.tab==="weight"?"active":""}">${rBW()}</div>`;
+h+=`<div class="tabs"><button class="tab ${S.tab==="workout"?"active":""}" data-tab="workout"><span class="tab-icon">💪</span>운동</button><button class="tab ${S.tab==="daily"?"active":""}" data-tab="daily"><span class="tab-icon">🔥</span>일상화</button><button class="tab ${S.tab==="cal"?"active":""}" data-tab="cal"><span class="tab-icon">📅</span>기록</button><button class="tab ${S.tab==="weight"?"active":""}" data-tab="weight"><span class="tab-icon">⚖️</span>체중</button></div>`;
+a.innerHTML=h;bindAll();if(S.tab==="weight")drawC()}
+
+function rGoals(){
+let h=`<div class="goals"><div class="goals-title">🎯 4대 운동 목표</div>`;
+for(const[k,g]of Object.entries(GOALS)){const cur=getGoalW(k),pct=goalPct(k),done=cur>=g.target;
+h+=`<div class="goal-row"><span class="goal-name">${g.name}</span><div class="goal-bar"><div class="goal-fill" style="width:${pct}%;background:${done?"var(--accent)":g.color}"></div></div><span class="goal-nums">${cur}→${g.target}kg</span><span class="goal-pct" style="color:${done?"var(--accent)":g.color}">${Math.round(pct)}%</span></div>`}
+h+=`</div>`;return h}
+
+function rWK(){
+const td=new Date(),ts=dS(td),ss=dS(S.sel),isT=ss===ts,wk=gW(S.sel);
+let h=`<div class="hdr"><div><h1>MY WORKOUT</h1><div class="hdr-sub">PPL 8일 사이클 × 매일 10km</div></div><button class="stb" id="bst">시작일</button></div>`;
+// Goals
+h+=rGoals();
+const ref=new Date(td);ref.setDate(ref.getDate()+S.wo*7);const dow=(ref.getDay()+6)%7,mon=new Date(ref);mon.setDate(ref.getDate()-dow);
+h+=`<div class="wn"><button id="wp">‹</button><button ${S.wo===0?'class="bt"':'style="background:none;border:1px solid var(--border);border-radius:6px;color:var(--dim);font-size:11px;padding:4px 12px;cursor:pointer"'} id="wto">오늘</button><button id="wn2">›</button></div><div class="wg">`;
+for(let i=0;i<7;i++){const d=new Date(mon);d.setDate(mon.getDate()+i);const ds=dS(d),iS=ds===ss,iT=ds===ts,w=gW(d),c=w?tC(w.key):"var(--dim)",bf=S.sd&&dd(S.sd,d)<0,ip=w&&w.type==="pass";
+h+=`<button class="dc ${iS?"sel":""} ${iT?"tod":""}" data-dt="${ds}" style="opacity:${bf?.3:ip?.5:1};${iS?"border-color:"+c+";background:var(--card)":""}"><span class="dn">${DK[d.getDay()]}</span><span class="dnum" ${iT?'style="color:var(--accent)"':''}>${d.getDate()}</span>${w&&!bf?`<div class="ddot" style="background:${ip?"var(--dim)":c}"></div>`:'<div style="height:6px"></div>'}</button>`}
+h+=`</div><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><span style="font-size:16px;font-weight:700">${S.sel.getMonth()+1}월 ${S.sel.getDate()}일 (${DK[S.sel.getDay()]})</span>${isT?'<span style="font-size:10px;background:var(--accent);color:#000;padding:2px 6px;border-radius:4px;font-weight:700">TODAY</span>':''}<div style="flex:1"></div>`;
+const canP=wk&&S.sd&&dd(S.sd,S.sel)>=0;
+if(canP){if(wk.type==="pass")h+=`<button class="pb pbu" id="unpass">Pass 취소</button>`;else h+=`<button class="pb pbd" id="dopass">Pass</button>`}
+h+=`</div>`;
+if(wk)h+=`<div style="background:#0d2818;border:1px solid var(--accent);border-radius:8px;padding:8px 12px;margin:8px 0;font-size:12px;color:var(--accent);font-weight:600">🏃 오늘 러닝 10km</div>`;
+if(!wk)h+=`<div class="ety">시작일 이전입니다</div>`;
+else if(wk.type==="pass")h+=`<div style="background:var(--card);border:2px dashed var(--border);border-radius:12px;padding:24px;text-align:center;margin-top:12px"><div style="font-size:36px;margin-bottom:8px">⏭️</div><div style="font-size:14px;color:var(--dim)">Pass 처리됨</div></div>`;
+else if(wk.type==="rest")h+=`<div class="rc" style="margin-top:12px"><div style="display:flex;align-items:center;gap:12px;margin-bottom:16px"><div class="wi" style="background:rgba(74,222,128,0.12)">🏃</div><div><div class="wtl" style="color:var(--run)">러닝 Only</div><div class="wsu">10km · 웨이트 휴식일</div></div></div><div style="background:var(--bg);border-radius:8px;padding:12px"><div style="font-size:14px">AB 슬라이드 · 4×15</div></div></div>`;
+else{
+const exs=S.wks[wk.key]||[],c=tC(wk.key),sess=getSess(S.sel);
+h+=`<div class="sess" style="margin-top:12px">`;
+if(!sess||!sess.start)h+=`<div style="text-align:center;color:var(--dim);font-size:13px;margin-bottom:8px">운동 시간 기록</div><div class="sess-btns"><button class="sess-btn sess-start" data-sa="start">▶ 운동 시작</button></div>`;
+else if(sess.state==="done"){const el=sessEl(sess),rt=sessRt(sess);h+=`<div style="text-align:center;font-size:12px;color:var(--dim);margin-bottom:4px">운동 완료</div><div class="sess-stat"><span>총 시간<strong>${fmt(el)}</strong></span><span>운동<strong>${fmt(el-rt)}</strong></span><span>휴식<strong>${fmt(rt)}</strong></span></div>`}
+else{const el=sessEl(sess),rt=sessRt(sess);h+=`<div class="sess-time" style="color:${sess.state==="resting"?"var(--warn)":"var(--accent)"}">${fmt(el)}</div><div class="sess-stat" style="margin-bottom:10px"><span>운동<strong>${fmt(el-rt)}</strong></span><span>휴식<strong>${fmt(rt)}</strong></span></div><div class="sess-btns">${sess.state==="active"?`<button class="sess-btn sess-rest" data-sa="rest">⏸ 휴식</button>`:`<button class="sess-btn sess-resume" data-sa="resume">▶ 재개</button>`}<button class="sess-btn sess-end" data-sa="end">⏹ 운동 끝</button></div>`}
+h+=`</div>`;
+h+=`<div class="wh"><div class="wi" style="background:${c}20">🏋️</div><div style="flex:1"><div class="wtl" style="color:${c}">${wk.label}</div><div class="wsu">${wk.sub}</div></div></div>`;
+h+=`<div class="eb"><button class="ebt ${S.em?"active":""}" id="te">${S.em?"✏️ 편집 중":"✏️ 루틴 편집"}</button>${S.em?'<button class="ebt save" id="se">✓ 완료</button>':''}</div>`;
+exs.forEach((ex,i)=>{
+const dw=S.wt[ex.id]!==undefined?S.wt[ex.id]:ex.defaultW;
+const cta=S.tEnd!==0&&S.tExId===ex.id;
+const isBig=ex.big4;
+const ready=isBig&&!S.em?checkReady(ex.id,wk.key):false;
+if(S.em){
+h+=`<div class="ec" style="border-color:var(--warn)"><div style="display:flex;align-items:center;gap:6px;margin-bottom:8px"><span class="en">${i+1}</span><input class="ef" value="${ex.name}" data-ei="${i}" data-f="name" style="flex:1"></div>`;
+h+=`<div class="erw"><span class="elb">세트</span><input class="ef efs" type="number" inputmode="numeric" value="${ex.sets}" data-ei="${i}" data-f="sets"><span class="elb">렙</span><input class="ef" style="width:70px" value="${ex.reps}" data-ei="${i}" data-f="reps"><span class="elb">휴식(초)</span><input class="ef efs" type="number" inputmode="numeric" value="${ex.rest}" data-ei="${i}" data-f="rest"></div>`;
+h+=`<div class="erw"><span class="elb">기본kg</span><input class="ef efs" type="number" inputmode="decimal" value="${ex.defaultW}" data-ei="${i}" data-f="defaultW"><button class="nwt ${ex.noWeight?"on":""}" data-ei="${i}" data-f="nw">${ex.noWeight?"중량없음✓":"중량있음"}</button><div style="flex:1"></div>${i>0?`<button class="emv" data-ei="${i}" data-dr="up">↑</button>`:''}${i<exs.length-1?`<button class="emv" data-ei="${i}" data-dr="down">↓</button>`:''}<button class="edl" data-di="${i}">삭제</button></div></div>`;
+}else{
+h+=`<div class="ec ${cta?"ta":""}"><div class="et"><span class="en">${i+1}</span><span class="enm">${ex.name}</span>`;
+if(ready)h+=`<span class="prog-badge prog-up">+5kg 증량 준비 ✓</span>`;
+else if(isBig)h+=`<span class="prog-badge prog-keep">렙 채우기</span>`;
+h+=`</div><div class="em"><span>${ex.sets}×${ex.reps}</span><span>휴식 ${fR(ex.rest)}</span>${isBig?`<span style="color:${GOALS[isBig].color}">목표 ${GOALS[isBig].target}kg</span>`:""}</div><div class="sg">`;
+for(let s=0;s<ex.sets;s++){const lg=gL(S.sel,wk.key,ex.id,s),lw=lg?.weight,lr=lg?.reps,dn=lg?.done;
+const isThisT=S.tExId===ex.id&&S.tSet===s,rem=isThisT?tRem():0;
+h+=`<div class="sr"><span class="sl">세트 ${s+1}</span>`;
+if(!ex.noWeight)h+=`<input class="si" type="number" inputmode="decimal" placeholder="${dw||""}" value="${lw!=null?lw:""}" data-ex="${ex.id}" data-s="${s}" data-sf="weight"><span class="su">kg</span>`;
+h+=`<input class="si" type="number" inputmode="numeric" placeholder="${ex.reps}" value="${lr!=null?lr:""}" data-ex="${ex.id}" data-s="${s}" data-sf="reps" style="width:48px"><span class="su">회</span><button class="sc ${dn?"done":""}" data-ex="${ex.id}" data-s="${s}" data-sa2="c">${dn?"✓":""}</button>`;
+if(isThisT&&S.tEnd===-1)h+=`<span class="td">완료!</span>`;else if(isThisT&&S.tEnd>0)h+=`<span class="ti">${Math.floor(rem/60)}:${String(rem%60).padStart(2,"0")}</span>`;else h+=`<button class="tb" data-rs="${ex.rest}" data-tex="${ex.id}" data-ts="${s}">⏱</button>`;
+h+=`</div>`}
+if(cta&&S.tEnd>0)h+=`<div class="tbar"><div class="tbf" style="width:${tPct()}%"></div></div>`;
+h+=`</div></div>`}});
+if(S.em)h+=`<button class="adb" data-wk="${wk.key}">+ 운동 추가</button>`}
+h+=`<div class="up"><h3>다음 예정</h3>`;
+for(let i=1;i<=4;i++){const d=new Date(S.sel);d.setDate(d.getDate()+i);const w=gW(d);if(!w)continue;const c=tC(w.key);const ip=w.type==="pass";
+h+=`<button class="ui" data-dt="${dS(d)}" style="${ip?"opacity:0.5":""}"><div class="ud" style="background:${ip?"var(--dim)":c}"></div><span class="udt">${d.getMonth()+1}/${d.getDate()} (${DK[d.getDay()]})</span><span class="unm" style="color:${ip?"var(--dim)":c}">${w.label}</span>${w.type==="rest"?'<span style="font-size:11px;color:var(--dim);margin-left:auto">러닝Only</span>':''}</button>`}
+h+=`</div>`;return h}
+
+function rDH(){const hd=S.hDate,hds=dS(hd),tds=dS(new Date()),isT=hds===tds,sk=getStrk(),allD=HAB.every(h=>getH(hd,h.id)>=h.max);
+let h=`<div class="hdr"><div><h1>운동의 일상화</h1><div class="hdr-sub">매일 꾸준히, 한 세트씩</div></div></div>`;
+h+=`<div class="dhdnv"><button id="hp">‹</button><span class="dhdl">${hd.getMonth()+1}월 ${hd.getDate()}일 (${DK[hd.getDay()]}) ${isT?"<span style='font-size:10px;background:var(--accent);color:#000;padding:2px 6px;border-radius:4px;font-weight:700;margin-left:4px'>TODAY</span>":""}</span><button id="hn">›</button></div>`;
+h+=`<div class="dhsk"><div class="dhskn">${sk}</div><div class="dhskl">연속 달성일</div></div>`;
+if(allD)h+=`<div style="background:var(--ad);border:1px solid var(--accent);border-radius:12px;padding:14px;text-align:center;margin-bottom:12px;font-size:14px;font-weight:700;color:var(--accent)">🎉 모든 운동 완료!</div>`;
+HAB.forEach(ha=>{const cur=getH(hd,ha.id),pct=Math.min(100,cur/ha.max*100),mx=cur>=ha.max;
+h+=`<div class="dhc"><div class="dht"><div><span style="font-size:18px;margin-right:6px">${ha.emoji}</span><span class="dhn">${ha.name}</span></div><div style="display:flex;align-items:center;gap:6px">${mx?'<span class="dhcp">완료</span>':""}${cur>0?`<button class="dhud" data-hu="${ha.id}" data-hs="${ha.step}">−${ha.step}</button>`:""}</div></div><div style="display:flex;align-items:baseline;gap:4px"><span class="dhct" style="color:${mx?"var(--accent)":ha.color}">${cur}</span><span class="dhm">/ ${ha.max}개</span></div><div class="dhb"><div class="dhf" style="width:${pct}%;background:${mx?"var(--accent)":ha.color}"></div></div><button class="dhbt ${mx?"mx":""}" style="background:${mx?"var(--border)":ha.color+"22"};color:${mx?"var(--dim)":ha.color}" data-ha="${ha.id}" data-hs="${ha.step}" data-hm="${ha.max}" ${mx?"disabled":""}>${mx?"완료 ✓":`+${ha.step}개`}</button></div>`});return h}
+
+function rCal(){const y=S.calYr,m=S.calMo,fd=new Date(y,m,1).getDay(),dl=new Date(y,m+1,0).getDate();
+let h=`<div class="hdr"><div><h1>운동 기록</h1><div class="hdr-sub">달력으로 운동 이력 확인</div></div></div>`;
+h+=`<div class="cal-nav"><button id="cm-prev">‹</button><span>${y}년 ${m+1}월</span><button id="cm-next">›</button></div><div class="cal-grid">`;
+DK.forEach(d=>h+=`<div class="cal-hdr">${d}</div>`);
+for(let i=0;i<fd;i++)h+=`<div class="cal-day empty"></div>`;
+for(let d=1;d<=dl;d++){const ds=`${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;const wk=gW(pD(ds));const hi=S.hist[ds];const se=S.sess[ds]?.state==="done";const isSel=S.calSel===ds;const c=wk?tC(wk.key):"var(--dim)";const ip=wk?.type==="pass";
+h+=`<div class="cal-day ${hi||se?"has":""} ${isSel?"csel":""}" data-cd="${ds}" style="${ip?"opacity:0.4":""}"><span>${d}</span>${wk&&!ip?`<div class="cal-dots"><div class="cal-dot" style="background:${c}"></div>${se?'<div class="cal-dot" style="background:var(--accent)"></div>':""}</div>`:""}</div>`}
+h+=`</div>`;
+if(S.calSel){const ds=S.calSel,wk=gW(pD(ds)),hi=S.hist[ds],se=S.sess[ds];
+h+=`<div class="hist-card"><div class="hist-title">${pD(ds).getMonth()+1}/${pD(ds).getDate()} (${DK[pD(ds).getDay()]})</div>`;
+if(wk)h+=`<div class="hist-detail">예정: <span style="color:${tC(wk.key)};font-weight:700">${wk.label}</span></div>`;
+if(hi)h+=`<div class="hist-detail" style="margin-top:4px">실제: <span style="color:var(--accent);font-weight:700">${hi.label}${hi.manual?" (직접입력)":""}</span></div>`;
+if(se?.state==="done"){const el=sessEl(se),rt=sessRt(se);h+=`<div class="hist-detail" style="margin-top:4px">총 ${fmt(el)} (운동 ${fmt(el-rt)} / 휴식 ${fmt(rt)})</div>`}
+h+=`<div style="font-size:11px;color:var(--dim);margin-top:10px;font-weight:600">직접 기록:</div><div class="hist-btns">`;
+["push-a","push-b","pull-a","pull-b","legs-a","legs-b"].forEach(k=>{const lb={"push-a":"Push A","push-b":"Push B","pull-a":"Pull A","pull-b":"Pull B","legs-a":"Legs A","legs-b":"Legs B"};
+h+=`<button class="hist-btn ${hi?.workout===k?"active":""}" data-hlog="${ds}" data-hwk="${k}">${lb[k]}</button>`});
+h+=`<button class="hist-btn" data-hlog="${ds}" data-hwk="clear" style="${!hi?"opacity:0.3":""}">삭제</button></div></div>`}
+return h}
+
+function rBW(){const sorted=[...S.bw].sort((a,b)=>b.date.localeCompare(a.date)),lt=sorted[0],st=sorted[sorted.length-1];
+const wa=new Date();wa.setDate(wa.getDate()-7);const ws=dS(wa),rw=sorted.filter(e=>e.date>=ws);const avg=rw.length?(rw.reduce((s,e)=>s+e.weight,0)/rw.length).toFixed(1):"—";
+let h=`<div class="hdr"><div><h1>체중 추적</h1><div class="hdr-sub">매일 기상 공복 측정</div></div></div>`;
+h+=`<div class="bwi"><input type="date" id="bwd" value="${dS(new Date())}"><input type="number" id="bwv" inputmode="decimal" placeholder="체중 (kg)" step="0.1"><button id="bwa">기록</button></div>`;
+h+=`<div class="bws"><div class="bwst"><div class="bwsv">${lt?lt.weight:"—"}</div><div class="bwsl">최근</div></div><div class="bwst"><div class="bwsv">${avg}</div><div class="bwsl">주간 평균</div></div><div class="bwst"><div class="bwsv" style="color:${st&&lt&&lt.weight<st.weight?"var(--accent)":"var(--text)"}">${st&&lt?(lt.weight-st.weight).toFixed(1):"—"}</div><div class="bwsl">총 변화</div></div></div>`;
+h+=`<div class="cb"><canvas id="ch" height="200"></canvas></div><div class="bwl"><div class="bwlh">기록 (${sorted.length}일)</div>`;
+sorted.slice(0,30).forEach((e,i)=>{const prev=sorted[i+1],df=prev?(e.weight-prev.weight).toFixed(1):null;const d=pD(e.date);
+h+=`<div class="bwli"><span style="font-size:13px;color:var(--dim)">${d.getMonth()+1}/${d.getDate()} (${DK[d.getDay()]})</span><div style="display:flex;align-items:center;gap:8px"><span style="font-size:15px;font-weight:700">${e.weight}kg</span>${df?`<span style="font-size:11px;padding:2px 6px;border-radius:4px;font-weight:600;background:${parseFloat(df)<=0?"var(--ad)":"rgba(239,68,68,0.2)"};color:${parseFloat(df)<=0?"var(--accent)":"var(--danger)"}">${parseFloat(df)>0?"+":""}${df}</span>`:""}<button class="bwd" data-bd="${e.date}">✕</button></div></div>`});
+h+=`</div>`;return h}
+
+function drawC(){const cv=document.getElementById("ch");if(!cv||S.bw.length<2)return;
+const ctx=cv.getContext("2d"),rect=cv.parentElement.getBoundingClientRect();cv.width=rect.width-32;cv.height=200;
+const w=cv.width,ht=cv.height,sorted=[...S.bw].sort((a,b)=>a.date.localeCompare(b.date)),vals=sorted.map(e=>e.weight),mn=Math.min(...vals)-1,mx=Math.max(...vals)+1,rng=mx-mn||1,px=40,py=20,cw=w-px-10,ch=ht-py*2;
+ctx.clearRect(0,0,w,ht);ctx.strokeStyle="#2a2a2a";ctx.lineWidth=1;
+for(let i=0;i<=5;i++){const y=py+ch-ch*(i/5);ctx.beginPath();ctx.moveTo(px,y);ctx.lineTo(w-10,y);ctx.stroke();ctx.fillStyle="#888";ctx.font="10px -apple-system,sans-serif";ctx.textAlign="right";ctx.fillText((mn+rng*(i/5)).toFixed(1),px-4,y+3)}
+ctx.strokeStyle="#4ade80";ctx.lineWidth=2;ctx.beginPath();
+sorted.forEach((e,i)=>{const x=px+(i/(sorted.length-1))*cw,y=py+ch-((e.weight-mn)/rng)*ch;i===0?ctx.moveTo(x,y):ctx.lineTo(x,y)});
+ctx.stroke();ctx.lineTo(px+cw,py+ch);ctx.lineTo(px,py+ch);ctx.closePath();ctx.fillStyle="rgba(74,222,128,0.08)";ctx.fill();
+sorted.forEach((e,i)=>{const x=px+(i/(sorted.length-1))*cw,y=py+ch-((e.weight-mn)/rng)*ch;ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fillStyle="#4ade80";ctx.fill()});
+ctx.fillStyle="#888";ctx.font="9px -apple-system,sans-serif";ctx.textAlign="center";
+if(sorted.length>1){const f=pD(sorted[0].date),l=pD(sorted[sorted.length-1].date);ctx.fillText(`${f.getMonth()+1}/${f.getDate()}`,px,ht-4);ctx.fillText(`${l.getMonth()+1}/${l.getDate()}`,px+cw,ht-4)}}
+
+setInterval(()=>{const sess=getSess(S.sel);if(sess&&(sess.state==="active"||sess.state==="resting")&&S.tab==="workout"){
+const el=document.querySelector('.sess-time');if(el)el.textContent=fmt(sessEl(sess));
+const stats=document.querySelectorAll('.sess-stat strong');if(stats.length>=2){const rt=sessRt(sess);stats[0].textContent=fmt(sessEl(sess)-rt);stats[1].textContent=fmt(rt)}}},1000);
+
+function bindAll(){
+document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click",()=>{S.tab=t.dataset.tab;S.em=false;R()}));
+document.getElementById("bst")?.addEventListener("click",()=>{S.setup=true;R()});
+document.getElementById("wp")?.addEventListener("click",()=>{S.wo--;R()});
+document.getElementById("wn2")?.addEventListener("click",()=>{S.wo++;R()});
+document.getElementById("wto")?.addEventListener("click",()=>{S.wo=0;S.sel=new Date();R()});
+document.querySelectorAll("[data-dt]").forEach(el=>el.addEventListener("click",()=>{S.sel=pD(el.dataset.dt);R()}));
+document.querySelectorAll("[data-sf]").forEach(inp=>inp.addEventListener("change",()=>{
+const wk=gW(S.sel);if(!wk||wk.type!=="weight")return;const exId=inp.dataset.ex,si=+inp.dataset.s,f=inp.dataset.sf;
+const existing=gL(S.sel,wk.key,exId,si)||{};const val=parseFloat(inp.value);existing[f]=isNaN(val)?null:val;
+sL(S.sel,wk.key,exId,si,existing)}));
+document.querySelectorAll("[data-sa2=c]").forEach(b=>b.addEventListener("click",()=>{
+const wk=gW(S.sel);if(!wk||wk.type!=="weight")return;const ex=gL(S.sel,wk.key,b.dataset.ex,+b.dataset.s)||{};ex.done=!ex.done;sL(S.sel,wk.key,b.dataset.ex,+b.dataset.s,ex);R()}));
+document.querySelectorAll("[data-rs]").forEach(b=>b.addEventListener("click",()=>startT(+b.dataset.rs,b.dataset.tex,+b.dataset.ts)));
+document.getElementById("tb-stop")?.addEventListener("click",stopT);
+document.getElementById("te")?.addEventListener("click",()=>{S.em=!S.em;R()});
+document.getElementById("se")?.addEventListener("click",()=>{S.em=false;R()});
+document.querySelectorAll("[data-f]").forEach(inp=>{
+if(inp.dataset.f==="nw"){inp.addEventListener("click",()=>{const wk=gW(S.sel);if(!wk)return;S.wks[wk.key][+inp.dataset.ei].noWeight=!S.wks[wk.key][+inp.dataset.ei].noWeight;swk();R()})}
+else{inp.addEventListener("change",()=>{const wk=gW(S.sel);if(!wk)return;let v=inp.value;if(["sets","rest","defaultW"].includes(inp.dataset.f))v=parseFloat(v)||0;if(inp.dataset.f==="sets")v=Math.max(1,Math.min(10,v));
+S.wks[wk.key][+inp.dataset.ei][inp.dataset.f]=v;if(inp.dataset.f==="defaultW"){S.wt[S.wks[wk.key][+inp.dataset.ei].id]=v;swt()}swk()})}});
+document.querySelectorAll("[data-dr]").forEach(b=>b.addEventListener("click",()=>{const wk=gW(S.sel);if(!wk)return;const i=+b.dataset.ei,a=S.wks[wk.key],ni=b.dataset.dr==="up"?i-1:i+1;if(ni<0||ni>=a.length)return;[a[i],a[ni]]=[a[ni],a[i]];swk();R()}));
+document.querySelectorAll("[data-di]").forEach(b=>b.addEventListener("click",()=>{const wk=gW(S.sel);if(!wk)return;const nm=S.wks[wk.key][+b.dataset.di].name;S.cfm={msg:`"${nm}" 삭제?`,action:()=>{S.wks[wk.key].splice(+b.dataset.di,1);swk();S.cfm=null;R()}};R()}));
+document.querySelectorAll("[data-wk]").forEach(b=>b.addEventListener("click",()=>{S.wks[b.dataset.wk].push({id:nid(),name:"새 운동",sets:3,reps:"10-12",rest:90,defaultW:0});swk();R()}));
+document.getElementById("cy")?.addEventListener("click",()=>{S.cfm?.action?.()});
+document.getElementById("cn")?.addEventListener("click",()=>{S.cfm=null;R()});
+document.getElementById("dopass")?.addEventListener("click",()=>{S.cfm={msg:`${S.sel.getMonth()+1}월 ${S.sel.getDate()}일 Pass?`,action:()=>{const ds=dS(S.sel);if(!S.pass.includes(ds)){S.pass.push(ds);S.pass.sort();sps()}S.cfm=null;R()}};R()});
+document.getElementById("unpass")?.addEventListener("click",()=>{S.pass=S.pass.filter(p=>p!==dS(S.sel));sps();R()});
+document.querySelectorAll("[data-sa]").forEach(b=>b.addEventListener("click",()=>{const a=b.dataset.sa;if(a==="start")startSess(S.sel);else if(a==="rest")restSess(S.sel);else if(a==="resume")resumeSess(S.sel);else if(a==="end")endSess(S.sel)}));
+document.getElementById("bwa")?.addEventListener("click",()=>{const d=document.getElementById("bwd").value,v=parseFloat(document.getElementById("bwv").value);if(!d||isNaN(v))return;S.bw=S.bw.filter(e=>e.date!==d);S.bw.push({date:d,weight:v});sbw();R()});
+document.querySelectorAll("[data-bd]").forEach(b=>b.addEventListener("click",()=>{S.bw=S.bw.filter(e=>e.date!==b.dataset.bd);sbw();R()}));
+document.getElementById("hp")?.addEventListener("click",()=>{S.hDate=new Date(S.hDate);S.hDate.setDate(S.hDate.getDate()-1);R()});
+document.getElementById("hn")?.addEventListener("click",()=>{const t=new Date(S.hDate);t.setDate(t.getDate()+1);if(t<=new Date()){S.hDate=t;R()}});
+document.querySelectorAll("[data-ha]").forEach(b=>b.addEventListener("click",()=>{addH(S.hDate,b.dataset.ha,+b.dataset.hs,+b.dataset.hm)}));
+document.querySelectorAll("[data-hu]").forEach(b=>b.addEventListener("click",()=>{undoH(S.hDate,b.dataset.hu,+b.dataset.hs)}));
+document.getElementById("cm-prev")?.addEventListener("click",()=>{S.calMo--;if(S.calMo<0){S.calMo=11;S.calYr--}R()});
+document.getElementById("cm-next")?.addEventListener("click",()=>{S.calMo++;if(S.calMo>11){S.calMo=0;S.calYr++}R()});
+document.querySelectorAll("[data-cd]").forEach(el=>el.addEventListener("click",()=>{S.calSel=S.calSel===el.dataset.cd?null:el.dataset.cd;R()}));
+document.querySelectorAll("[data-hlog]").forEach(b=>b.addEventListener("click",()=>{const ds=b.dataset.hlog,wk=b.dataset.hwk;
+if(wk==="clear"){delete S.hist[ds]}else{const lb={"push-a":"Push A","push-b":"Push B","pull-a":"Pull A","pull-b":"Pull B","legs-a":"Legs A","legs-b":"Legs B"};S.hist[ds]={workout:wk,label:lb[wk],manual:true}}shi();R()}))}
+init();R()
+</script>
+</body>
+</html>
