@@ -38,7 +38,7 @@ button{font-family:inherit}
 .enm{font-size:14px;font-weight:600;flex:1}.em{display:flex;gap:12px;margin:6px 0 0 24px}.em span{font-size:12px;color:var(--dim)}
 .sg{margin:10px 0 0 24px;display:flex;flex-direction:column;gap:4px}
 .sr{display:flex;align-items:center;gap:6px}.sl{font-size:11px;color:var(--dim);min-width:36px;font-weight:600}
-.si{width:56px;text-align:center;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:14px;font-weight:600;padding:6px 0;outline:none}.si:focus{border-color:var(--accent)}
+.si{width:56px;text-align:center;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:14px;font-weight:600;padding:6px 0;outline:none}.si:focus{border-color:var(--accent)}.ri{width:52px;text-align:center;background:rgba(0,0,0,0.3);border:1px solid var(--accent);border-radius:6px;color:var(--accent);font-size:13px;font-weight:700;padding:3px 0;outline:none}
 .su{font-size:10px;color:var(--dim);min-width:20px}
 .sc{width:28px;height:28px;border-radius:6px;background:var(--bg);border:1px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--accent);flex-shrink:0}.sc.done{background:var(--ad);border-color:var(--accent)}
 .tb{background:var(--ad);border:1px solid var(--accent);border-radius:8px;color:var(--accent);font-size:12px;font-weight:700;padding:6px 10px;cursor:pointer;margin-left:auto;white-space:nowrap}
@@ -165,9 +165,10 @@ const ld=k=>{try{const v=localStorage.getItem("mw_"+k);return v?JSON.parse(v):nu
 function init(){const v=ld("ver");if(v!==6){sv("ver",6);sv("config",null)}
 const c=ld("config");if(c?.startDate)S.sd=pD(c.startDate);else S.setup=true;
 S.wt=ld("wt")||{};S.logs=ld("logs")||{};S.bw=ld("bw")||[];S.wks=ld("cwk6")||JSON.parse(JSON.stringify(DW));
-S.idc=ld("idc")||1000;S.hab=ld("habits")||{};S.pass=ld("pass")||[];S.sess=ld("sess")||{};S.hist=ld("hist")||{};
+S.idc=ld("idc")||1000;S.hab=ld("habits")||{};S.pass=ld("pass")||[];S.sess=ld("sess")||{};S.hist=ld("hist")||{};S.run=ld("run")||{};migWks();
 if('Notification'in window&&Notification.permission==='default')try{Notification.requestPermission()}catch(e){}}
-const swk=()=>{sv("cwk6",S.wks);toast("루틴 저장됨")};const swt=()=>sv("wt",S.wt);const slg=()=>sv("logs",S.logs);const sbw=()=>sv("bw",S.bw);const scf=()=>sv("config",{startDate:dS(S.sd)});const shb=()=>sv("habits",S.hab);const sps=()=>sv("pass",S.pass);const sse=()=>sv("sess",S.sess);const shi=()=>sv("hist",S.hist);
+const swk=()=>{sv("cwk6",S.wks);toast("루틴 저장됨")};const swt=()=>sv("wt",S.wt);const slg=()=>sv("logs",S.logs);const sbw=()=>sv("bw",S.bw);const scf=()=>sv("config",{startDate:dS(S.sd)});const shb=()=>sv("habits",S.hab);const sps=()=>sv("pass",S.pass);const sse=()=>sv("sess",S.sess);const shi=()=>sv("hist",S.hist);const srn=()=>sv("run",S.run);
+function migWks(){let ch=false;for(const k in S.wks){for(const ex of S.wks[k]){if(!ex.st){const n=Math.max(1,ex.sets||3);ex.st=Array.from({length:n},()=>({w:ex.defaultW||0,r:String(ex.reps||"10")}));delete ex.sets;delete ex.reps;delete ex.defaultW;ch=true}}}if(ch)sv("cwk6",S.wks)}
 function nid(){S.idc++;sv("idc",S.idc);return"ex"+S.idc}
 const dS=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
 const pD=s=>{const[y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d)};
@@ -182,6 +183,7 @@ function addH(d,h,s,m){const k=dS(d);if(!S.hab[k])S.hab[k]={};S.hab[k][h]=Math.m
 function undoH(d,h,s){const k=dS(d);if(!S.hab[k])return;S.hab[k][h]=Math.max(0,(S.hab[k][h]||0)-s);shb();R()}
 function getStrk(){let s=0;const d=new Date();for(let i=0;i<365;i++){const c=new Date(d);c.setDate(d.getDate()-i);const k=dS(c);const dd=S.hab[k];if(!dd)break;if(HAB.every(h=>(dd[h.id]||0)>=h.max))s++;else break}return s}
 function getSess(d){return S.sess[dS(d)]||null}
+function getRun(d){const v=S.run[dS(d)];return v==null?10:v}
 function startSess(d){S.sess[dS(d)]={start:Date.now(),rests:[],end:null,state:"active"};sse();R()}
 function restSess(d){const s=S.sess[dS(d)];if(!s||s.state!=="active")return;s.rests.push({start:Date.now(),end:null});s.state="resting";sse();R()}
 function resumeSess(d){const s=S.sess[dS(d)];if(!s||s.state!=="resting")return;const r=s.rests[s.rests.length-1];if(r)r.end=Date.now();s.state="active";sse();R()}
@@ -191,40 +193,42 @@ function sessRt(s){return s.rests.reduce((t,r)=>t+Math.floor(((r.end||Date.now()
 function fmt(s){const h=Math.floor(s/3600),m=Math.floor(s%3600/60),sc=s%60;return h>0?`${h}:${String(m).padStart(2,"0")}:${String(sc).padStart(2,"0")}`:`${m}:${String(sc).padStart(2,"0")}`}
 
 // Goals: get current working weight for a big4 lift
-function getGoalW(key){const g=GOALS[key];if(!g)return g.start;return S.wt[g.exId]!==undefined?S.wt[g.exId]:(DW[Object.keys(DW).find(k=>DW[k].some(e=>e.id===g.exId))]?.find(e=>e.id===g.exId)?.defaultW||0)}
+function getGoalW(key){const g=GOALS[key];if(!g)return 0;for(const wk in S.wks){const ex=S.wks[wk].find(e=>e.id===g.exId);if(ex&&ex.st&&ex.st.length)return Math.max(...ex.st.map(s=>s.w||0))}return g.start}
 function goalPct(key){const g=GOALS[key],cur=getGoalW(key);return Math.min(100,Math.max(0,(cur-g.start)/(g.target-g.start)*100))}
 
 // Check if ready for +5kg (all sets at rep upper bound in most recent log)
 function checkReady(exId,wkKey){
-const ex=S.wks[wkKey]?.find(e=>e.id===exId);if(!ex)return false;
-const repMax=parseInt(ex.reps.split("-").pop())||parseInt(ex.reps);
-// Find most recent log for this exercise
+const ex=S.wks[wkKey]?.find(e=>e.id===exId);if(!ex||!ex.st||!ex.st.length)return false;
+let ti=0;for(let i=1;i<ex.st.length;i++)if((ex.st[i].w||0)>(ex.st[ti].w||0))ti=i;
+const repMax=parseInt(String(ex.st[ti].r).split("-").pop())||parseInt(ex.st[ti].r);
+if(!repMax)return false;
 const logKeys=Object.keys(S.logs).filter(k=>k.endsWith("_"+wkKey));
 if(!logKeys.length)return false;
 logKeys.sort().reverse();
 for(const lk of logKeys){const exLog=S.logs[lk][exId];if(!exLog)continue;
-let allHit=true;
-for(let s=0;s<ex.sets;s++){const sl=exLog[s];if(!sl||!sl.reps||sl.reps<repMax){allHit=false;break}}
-return allHit}
+const sl=exLog[ti];return !!(sl&&sl.reps&&sl.reps>=repMax)}
 return false}
 
-function playAlarm(){try{const ctx=S.actx||new(window.AudioContext||window.webkitAudioContext)();S.actx=ctx;if(ctx.state==='suspended')ctx.resume();
-for(let r=0;r<3;r++){for(let i=0;i<3;i++){const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.frequency.value=i%2===0?880:660;o.type='square';g.gain.value=0.15;const t=r*1.2+i*0.25;o.start(ctx.currentTime+t);o.stop(ctx.currentTime+t+0.15)}}}catch(e){}}
-function timerDone(){clearInterval(S.tiv);clearTimeout(S.tTo);playAlarm();try{navigator.vibrate?.([200,100,200,100,200])}catch(e){}
+function playAlarm(){try{const ctx=S.actx||new(window.AudioContext||window.webkitAudioContext)();S.actx=ctx;const beep=()=>{for(let r=0;r<3;r++){for(let i=0;i<3;i++){const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.frequency.value=i%2===0?880:660;o.type='square';g.gain.value=0.15;const t=r*1.2+i*0.25;o.start(ctx.currentTime+t);o.stop(ctx.currentTime+t+0.15)}}};if(ctx.state==='suspended')ctx.resume().then(beep).catch(beep);else beep()}catch(e){}}
+function reqWake(){try{if('wakeLock'in navigator)navigator.wakeLock.request('screen').then(w=>{S.wl=w}).catch(()=>{})}catch(e){}}
+function relWake(){try{if(S.wl&&S.wl.release)S.wl.release();S.wl=null}catch(e){}}
+function warmAudio(){try{if(!S.actx)S.actx=new(window.AudioContext||window.webkitAudioContext)();if(S.actx.state==='suspended')S.actx.resume()}catch(e){}}
+function tick(){if(S.tEnd<=0)return;const rem=tRem();if(rem<=0){timerDone();return}const txt=`${Math.floor(rem/60)}:${String(rem%60).padStart(2,"0")}`;const a=document.getElementById("tbti");if(a)a.textContent=txt;const b=document.getElementById("tinl");if(b)b.textContent=txt;const c=document.getElementById("tbfill");if(c)c.style.width=tPct()+"%"}
+function timerDone(){clearInterval(S.tiv);clearTimeout(S.tTo);relWake();playAlarm();try{navigator.vibrate?.([200,100,200,100,200])}catch(e){}
 if('Notification'in window&&Notification.permission==='granted')try{new Notification('MY WORKOUT',{body:'휴식 끝! 다음 세트 준비'})}catch(e){}
 S.tEnd=-1;R();setTimeout(()=>{S.tEnd=0;S.tExId=null;S.tSet=-1;R()},3500)}
-function startT(sec,exId,si){if(!S.actx)try{S.actx=new(window.AudioContext||window.webkitAudioContext)()}catch(e){}
+function startT(sec,exId,si){warmAudio();reqWake();
 S.tEnd=Date.now()+sec*1000;S.tExId=exId;S.tSet=si;S.tRest=sec;clearTimeout(S.tTo);clearInterval(S.tiv);
-S.tTo=setTimeout(()=>{if(S.tEnd>0)timerDone()},sec*1000);S.tiv=setInterval(()=>{if(S.tEnd>0){if(Math.ceil((S.tEnd-Date.now())/1000)<=0)timerDone();else R()}},1000);R()}
-function stopT(){clearInterval(S.tiv);clearTimeout(S.tTo);S.tEnd=0;S.tExId=null;S.tSet=-1;R()}
-document.addEventListener('visibilitychange',()=>{if(!document.hidden&&S.tEnd>0){if(Math.ceil((S.tEnd-Date.now())/1000)<=0)timerDone();else R()}});
+S.tTo=setTimeout(()=>{if(S.tEnd>0)timerDone()},sec*1000);S.tiv=setInterval(tick,1000);R()}
+function stopT(){clearInterval(S.tiv);clearTimeout(S.tTo);relWake();S.tEnd=0;S.tExId=null;S.tSet=-1;R()}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&S.tEnd>0){if(tRem()<=0)timerDone();else{reqWake();R()}}});
 function tRem(){return S.tEnd>0?Math.max(0,Math.ceil((S.tEnd-Date.now())/1000)):0}
 function tPct(){return S.tRest>0&&S.tEnd>0?(tRem()/S.tRest*100):0}
 function toast(m){const t=document.getElementById("toast");if(t){t.textContent=m+" ✓";t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1200)}}
 
 function R(){const a=document.getElementById("app");let h=`<div class="toast" id="toast"></div>`;
 if(S.setup){h+=`<div class="so"><div class="soc"><div style="font-size:32px;margin-bottom:8px">🏋️</div><h2>운동 시작일 설정</h2><p>새 프로그램의 첫 번째 운동 날짜를 선택하세요</p><input type="date" id="sd-in" value="${dS(new Date())}"><button id="sd-btn">시작하기</button></div></div>`;a.innerHTML=h;document.getElementById("sd-btn")?.addEventListener("click",()=>{const v=document.getElementById("sd-in").value;if(v){S.sd=pD(v);S.setup=false;scf();R()}});return}
-if(S.tEnd!==0){const rem=tRem();h+=`<div class="tbn"><span class="tbt">⏱ 휴식</span><span class="tbti" style="color:${S.tEnd===-1?"var(--danger)":"var(--accent)"}">${S.tEnd===-1?"완료!":`${Math.floor(rem/60)}:${String(rem%60).padStart(2,"0")}`}</span><button class="tbs" id="tb-stop">${S.tEnd===-1?"닫기":"중지"}</button></div><div style="height:44px"></div>`}
+if(S.tEnd!==0){const rem=tRem();h+=`<div class="tbn"><span class="tbt">⏱ 휴식</span><span class="tbti" id="tbti" style="color:${S.tEnd===-1?"var(--danger)":"var(--accent)"}">${S.tEnd===-1?"완료!":`${Math.floor(rem/60)}:${String(rem%60).padStart(2,"0")}`}</span><button class="tbs" id="tb-stop">${S.tEnd===-1?"닫기":"중지"}</button></div><div style="height:44px"></div>`}
 if(S.cfm)h+=`<div class="cov"><div class="cbox"><p>${S.cfm.msg}</p><div class="cbts"><button class="cbn" id="cn">취소</button><button class="cby" id="cy">확인</button></div></div></div>`;
 h+=`<div class="page ${S.tab==="workout"?"active":""}">${rWK()}</div>`;
 h+=`<div class="page ${S.tab==="daily"?"active":""}">${rDH()}</div>`;
@@ -252,10 +256,10 @@ h+=`</div><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"
 const canP=wk&&S.sd&&dd(S.sd,S.sel)>=0;
 if(canP){if(wk.type==="pass")h+=`<button class="pb pbu" id="unpass">Pass 취소</button>`;else h+=`<button class="pb pbd" id="dopass">Pass</button>`}
 h+=`</div>`;
-if(wk)h+=`<div style="background:#0d2818;border:1px solid var(--accent);border-radius:8px;padding:8px 12px;margin:8px 0;font-size:12px;color:var(--accent);font-weight:600">🏃 오늘 러닝 10km</div>`;
+if(wk)h+=`<div style="background:#0d2818;border:1px solid var(--accent);border-radius:8px;padding:8px 12px;margin:8px 0;font-size:12px;color:var(--accent);font-weight:600;display:flex;align-items:center;gap:6px">🏃 오늘 러닝 <input class="ri" type="number" inputmode="decimal" step="0.5" value="${getRun(S.sel)}" data-run="${dS(S.sel)}"> km</div>`;
 if(!wk)h+=`<div class="ety">시작일 이전입니다</div>`;
 else if(wk.type==="pass")h+=`<div style="background:var(--card);border:2px dashed var(--border);border-radius:12px;padding:24px;text-align:center;margin-top:12px"><div style="font-size:36px;margin-bottom:8px">⏭️</div><div style="font-size:14px;color:var(--dim)">Pass 처리됨</div></div>`;
-else if(wk.type==="rest")h+=`<div class="rc" style="margin-top:12px"><div style="display:flex;align-items:center;gap:12px;margin-bottom:16px"><div class="wi" style="background:rgba(74,222,128,0.12)">🏃</div><div><div class="wtl" style="color:var(--run)">러닝 Only</div><div class="wsu">10km · 웨이트 휴식일</div></div></div><div style="background:var(--bg);border-radius:8px;padding:12px"><div style="font-size:14px">AB 슬라이드 · 4×15</div></div></div>`;
+else if(wk.type==="rest")h+=`<div class="rc" style="margin-top:12px"><div style="display:flex;align-items:center;gap:12px;margin-bottom:16px"><div class="wi" style="background:rgba(74,222,128,0.12)">🏃</div><div><div class="wtl" style="color:var(--run)">러닝 Only</div><div class="wsu">${getRun(S.sel)}km · 웨이트 휴식일</div></div></div><div style="background:var(--bg);border-radius:8px;padding:12px"><div style="font-size:14px">AB 슬라이드 · 4×15</div></div></div>`;
 else{
 const exs=S.wks[wk.key]||[],c=tC(wk.key),sess=getSess(S.sel);
 h+=`<div class="sess" style="margin-top:12px">`;
@@ -266,27 +270,27 @@ h+=`</div>`;
 h+=`<div class="wh"><div class="wi" style="background:${c}20">🏋️</div><div style="flex:1"><div class="wtl" style="color:${c}">${wk.label}</div><div class="wsu">${wk.sub}</div></div></div>`;
 h+=`<div class="eb"><button class="ebt ${S.em?"active":""}" id="te">${S.em?"✏️ 편집 중":"✏️ 루틴 편집"}</button>${S.em?'<button class="ebt save" id="se">✓ 완료</button>':''}</div>`;
 exs.forEach((ex,i)=>{
-const dw=S.wt[ex.id]!==undefined?S.wt[ex.id]:ex.defaultW;
 const cta=S.tEnd!==0&&S.tExId===ex.id;
 const isBig=ex.big4;
 const ready=isBig&&!S.em?checkReady(ex.id,wk.key):false;
 if(S.em){
 h+=`<div class="ec" style="border-color:var(--warn)"><div style="display:flex;align-items:center;gap:6px;margin-bottom:8px"><span class="en">${i+1}</span><input class="ef" value="${ex.name}" data-ei="${i}" data-f="name" style="flex:1"></div>`;
-h+=`<div class="erw"><span class="elb">세트</span><input class="ef efs" type="number" inputmode="numeric" value="${ex.sets}" data-ei="${i}" data-f="sets"><span class="elb">렙</span><input class="ef" style="width:70px" value="${ex.reps}" data-ei="${i}" data-f="reps"><span class="elb">휴식(초)</span><input class="ef efs" type="number" inputmode="numeric" value="${ex.rest}" data-ei="${i}" data-f="rest"></div>`;
-h+=`<div class="erw"><span class="elb">기본kg</span><input class="ef efs" type="number" inputmode="decimal" value="${ex.defaultW}" data-ei="${i}" data-f="defaultW"><button class="nwt ${ex.noWeight?"on":""}" data-ei="${i}" data-f="nw">${ex.noWeight?"중량없음✓":"중량있음"}</button><div style="flex:1"></div>${i>0?`<button class="emv" data-ei="${i}" data-dr="up">↑</button>`:''}${i<exs.length-1?`<button class="emv" data-ei="${i}" data-dr="down">↓</button>`:''}<button class="edl" data-di="${i}">삭제</button></div></div>`;
+h+=`<div class="erw"><span class="elb">휴식(초)</span><input class="ef efs" type="number" inputmode="numeric" value="${ex.rest}" data-ei="${i}" data-f="rest"><button class="nwt ${ex.noWeight?"on":""}" data-ei="${i}" data-f="nw">${ex.noWeight?"중량없음✓":"중량있음"}</button><div style="flex:1"></div>${i>0?`<button class="emv" data-ei="${i}" data-dr="up">↑</button>`:''}${i<exs.length-1?`<button class="emv" data-ei="${i}" data-dr="down">↓</button>`:''}<button class="edl" data-di="${i}">삭제</button></div>`;
+ex.st.forEach((t,j)=>{h+=`<div class="erw"><span class="elb">세트 ${j+1}</span>${!ex.noWeight?`<input class="ef efs" type="number" inputmode="decimal" value="${t.w}" data-ei="${i}" data-si="${j}" data-sf2="w"><span class="elb" style="min-width:auto">kg</span>`:''}<input class="ef efs" value="${t.r}" data-ei="${i}" data-si="${j}" data-sf2="r"><span class="elb" style="min-width:auto">렙</span>${ex.st.length>1?`<button class="edl" data-ei="${i}" data-dsi="${j}">−</button>`:''}</div>`});
+h+=`<div class="erw"><button class="nwt" data-ei="${i}" data-asi="1" style="padding:5px 10px">+ 세트 추가</button></div></div>`;
 }else{
 h+=`<div class="ec ${cta?"ta":""}"><div class="et"><span class="en">${i+1}</span><span class="enm">${ex.name}</span>`;
 if(ready)h+=`<span class="prog-badge prog-up">+5kg 증량 준비 ✓</span>`;
 else if(isBig)h+=`<span class="prog-badge prog-keep">렙 채우기</span>`;
-h+=`</div><div class="em"><span>${ex.sets}×${ex.reps}</span><span>휴식 ${fR(ex.rest)}</span>${isBig?`<span style="color:${GOALS[isBig].color}">목표 ${GOALS[isBig].target}kg</span>`:""}</div><div class="sg">`;
-for(let s=0;s<ex.sets;s++){const lg=gL(S.sel,wk.key,ex.id,s),lw=lg?.weight,lr=lg?.reps,dn=lg?.done;
+h+=`</div><div class="em"><span>${ex.st.length}세트</span><span>휴식 ${fR(ex.rest)}</span>${isBig?`<span style="color:${GOALS[isBig].color}">목표 ${GOALS[isBig].target}kg</span>`:""}</div><div class="sg">`;
+for(let s=0;s<ex.st.length;s++){const t=ex.st[s],lg=gL(S.sel,wk.key,ex.id,s),lw=lg?.weight,lr=lg?.reps,dn=lg?.done;
 const isThisT=S.tExId===ex.id&&S.tSet===s,rem=isThisT?tRem():0;
 h+=`<div class="sr"><span class="sl">세트 ${s+1}</span>`;
-if(!ex.noWeight)h+=`<input class="si" type="number" inputmode="decimal" placeholder="${dw||""}" value="${lw!=null?lw:""}" data-ex="${ex.id}" data-s="${s}" data-sf="weight"><span class="su">kg</span>`;
-h+=`<input class="si" type="number" inputmode="numeric" placeholder="${ex.reps}" value="${lr!=null?lr:""}" data-ex="${ex.id}" data-s="${s}" data-sf="reps" style="width:48px"><span class="su">회</span><button class="sc ${dn?"done":""}" data-ex="${ex.id}" data-s="${s}" data-sa2="c">${dn?"✓":""}</button>`;
-if(isThisT&&S.tEnd===-1)h+=`<span class="td">완료!</span>`;else if(isThisT&&S.tEnd>0)h+=`<span class="ti">${Math.floor(rem/60)}:${String(rem%60).padStart(2,"0")}</span>`;else h+=`<button class="tb" data-rs="${ex.rest}" data-tex="${ex.id}" data-ts="${s}">⏱</button>`;
+if(!ex.noWeight)h+=`<input class="si" type="number" inputmode="decimal" placeholder="${t.w||""}" value="${lw!=null?lw:""}" data-ex="${ex.id}" data-s="${s}" data-sf="weight"><span class="su">kg</span>`;
+h+=`<input class="si" type="number" inputmode="numeric" placeholder="${t.r}" value="${lr!=null?lr:""}" data-ex="${ex.id}" data-s="${s}" data-sf="reps" style="width:48px"><span class="su">회</span><button class="sc ${dn?"done":""}" data-ex="${ex.id}" data-s="${s}" data-sa2="c">${dn?"✓":""}</button>`;
+if(isThisT&&S.tEnd===-1)h+=`<span class="td">완료!</span>`;else if(isThisT&&S.tEnd>0)h+=`<span class="ti" id="tinl">${Math.floor(rem/60)}:${String(rem%60).padStart(2,"0")}</span>`;else h+=`<button class="tb" data-rs="${ex.rest}" data-tex="${ex.id}" data-ts="${s}">⏱</button>`;
 h+=`</div>`}
-if(cta&&S.tEnd>0)h+=`<div class="tbar"><div class="tbf" style="width:${tPct()}%"></div></div>`;
+if(cta&&S.tEnd>0)h+=`<div class="tbar"><div class="tbf" id="tbfill" style="width:${tPct()}%"></div></div>`;
 h+=`</div></div>`}});
 if(S.em)h+=`<button class="adb" data-wk="${wk.key}">+ 운동 추가</button>`}
 h+=`<div class="up"><h3>다음 예정</h3>`;
@@ -313,6 +317,7 @@ h+=`</div>`;
 if(S.calSel){const ds=S.calSel,wk=gW(pD(ds)),hi=S.hist[ds],se=S.sess[ds];
 h+=`<div class="hist-card"><div class="hist-title">${pD(ds).getMonth()+1}/${pD(ds).getDate()} (${DK[pD(ds).getDay()]})</div>`;
 if(wk)h+=`<div class="hist-detail">예정: <span style="color:${tC(wk.key)};font-weight:700">${wk.label}</span></div>`;
+if(wk&&wk.type!=="pass")h+=`<div class="hist-detail" style="margin-top:4px">러닝: <span style="color:var(--run);font-weight:700">${getRun(pD(ds))}km</span></div>`;
 if(hi)h+=`<div class="hist-detail" style="margin-top:4px">실제: <span style="color:var(--accent);font-weight:700">${hi.label}${hi.manual?" (직접입력)":""}</span></div>`;
 if(se?.state==="done"){const el=sessEl(se),rt=sessRt(se);h+=`<div class="hist-detail" style="margin-top:4px">총 ${fmt(el)} (운동 ${fmt(el-rt)} / 휴식 ${fmt(rt)})</div>`}
 h+=`<div style="font-size:11px;color:var(--dim);margin-top:10px;font-weight:600">직접 기록:</div><div class="hist-btns">`;
@@ -354,23 +359,26 @@ document.getElementById("wp")?.addEventListener("click",()=>{S.wo--;R()});
 document.getElementById("wn2")?.addEventListener("click",()=>{S.wo++;R()});
 document.getElementById("wto")?.addEventListener("click",()=>{S.wo=0;S.sel=new Date();R()});
 document.querySelectorAll("[data-dt]").forEach(el=>el.addEventListener("click",()=>{S.sel=pD(el.dataset.dt);R()}));
+document.querySelectorAll("[data-run]").forEach(inp=>inp.addEventListener("change",()=>{const v=parseFloat(inp.value);if(isNaN(v)||v<0){R();return}S.run[inp.dataset.run]=v;srn();R()}));
 document.querySelectorAll("[data-sf]").forEach(inp=>inp.addEventListener("change",()=>{
 const wk=gW(S.sel);if(!wk||wk.type!=="weight")return;const exId=inp.dataset.ex,si=+inp.dataset.s,f=inp.dataset.sf;
 const existing=gL(S.sel,wk.key,exId,si)||{};const val=parseFloat(inp.value);existing[f]=isNaN(val)?null:val;
 sL(S.sel,wk.key,exId,si,existing)}));
 document.querySelectorAll("[data-sa2=c]").forEach(b=>b.addEventListener("click",()=>{
-const wk=gW(S.sel);if(!wk||wk.type!=="weight")return;const ex=gL(S.sel,wk.key,b.dataset.ex,+b.dataset.s)||{};ex.done=!ex.done;sL(S.sel,wk.key,b.dataset.ex,+b.dataset.s,ex);R()}));
+const wk=gW(S.sel);if(!wk||wk.type!=="weight")return;const exId=b.dataset.ex,si=+b.dataset.s,lg=gL(S.sel,wk.key,exId,si)||{};lg.done=!lg.done;sL(S.sel,wk.key,exId,si,lg);if(lg.done){const ed=S.wks[wk.key].find(e=>e.id===exId);startT(ed?ed.rest:90,exId,si)}else R()}));
 document.querySelectorAll("[data-rs]").forEach(b=>b.addEventListener("click",()=>startT(+b.dataset.rs,b.dataset.tex,+b.dataset.ts)));
 document.getElementById("tb-stop")?.addEventListener("click",stopT);
 document.getElementById("te")?.addEventListener("click",()=>{S.em=!S.em;R()});
 document.getElementById("se")?.addEventListener("click",()=>{S.em=false;R()});
 document.querySelectorAll("[data-f]").forEach(inp=>{
 if(inp.dataset.f==="nw"){inp.addEventListener("click",()=>{const wk=gW(S.sel);if(!wk)return;S.wks[wk.key][+inp.dataset.ei].noWeight=!S.wks[wk.key][+inp.dataset.ei].noWeight;swk();R()})}
-else{inp.addEventListener("change",()=>{const wk=gW(S.sel);if(!wk)return;let v=inp.value;if(["sets","rest","defaultW"].includes(inp.dataset.f))v=parseFloat(v)||0;if(inp.dataset.f==="sets")v=Math.max(1,Math.min(10,v));
-S.wks[wk.key][+inp.dataset.ei][inp.dataset.f]=v;if(inp.dataset.f==="defaultW"){S.wt[S.wks[wk.key][+inp.dataset.ei].id]=v;swt()}swk()})}});
+else{inp.addEventListener("change",()=>{const wk=gW(S.sel);if(!wk)return;let v=inp.value;if(inp.dataset.f==="rest")v=parseFloat(v)||0;S.wks[wk.key][+inp.dataset.ei][inp.dataset.f]=v;swk()})}});
+document.querySelectorAll("[data-sf2]").forEach(inp=>inp.addEventListener("change",()=>{const wk=gW(S.sel);if(!wk)return;const ex=S.wks[wk.key][+inp.dataset.ei],j=+inp.dataset.si;if(inp.dataset.sf2==="w")ex.st[j].w=parseFloat(inp.value)||0;else ex.st[j].r=inp.value;swk()}));
+document.querySelectorAll("[data-asi]").forEach(b=>b.addEventListener("click",()=>{const wk=gW(S.sel);if(!wk)return;const ex=S.wks[wk.key][+b.dataset.ei],last=ex.st[ex.st.length-1]||{w:0,r:"10"};ex.st.push({w:last.w,r:last.r});swk();R()}));
+document.querySelectorAll("[data-dsi]").forEach(b=>b.addEventListener("click",()=>{const wk=gW(S.sel);if(!wk)return;const ex=S.wks[wk.key][+b.dataset.ei];if(ex.st.length<=1)return;ex.st.splice(+b.dataset.dsi,1);swk();R()}));
 document.querySelectorAll("[data-dr]").forEach(b=>b.addEventListener("click",()=>{const wk=gW(S.sel);if(!wk)return;const i=+b.dataset.ei,a=S.wks[wk.key],ni=b.dataset.dr==="up"?i-1:i+1;if(ni<0||ni>=a.length)return;[a[i],a[ni]]=[a[ni],a[i]];swk();R()}));
 document.querySelectorAll("[data-di]").forEach(b=>b.addEventListener("click",()=>{const wk=gW(S.sel);if(!wk)return;const nm=S.wks[wk.key][+b.dataset.di].name;S.cfm={msg:`"${nm}" 삭제?`,action:()=>{S.wks[wk.key].splice(+b.dataset.di,1);swk();S.cfm=null;R()}};R()}));
-document.querySelectorAll("[data-wk]").forEach(b=>b.addEventListener("click",()=>{S.wks[b.dataset.wk].push({id:nid(),name:"새 운동",sets:3,reps:"10-12",rest:90,defaultW:0});swk();R()}));
+document.querySelectorAll("[data-wk]").forEach(b=>b.addEventListener("click",()=>{S.wks[b.dataset.wk].push({id:nid(),name:"새 운동",rest:90,st:[{w:0,r:"10-12"},{w:0,r:"10-12"},{w:0,r:"10-12"}]});swk();R()}));
 document.getElementById("cy")?.addEventListener("click",()=>{S.cfm?.action?.()});
 document.getElementById("cn")?.addEventListener("click",()=>{S.cfm=null;R()});
 document.getElementById("dopass")?.addEventListener("click",()=>{S.cfm={msg:`${S.sel.getMonth()+1}월 ${S.sel.getDate()}일 Pass?`,action:()=>{const ds=dS(S.sel);if(!S.pass.includes(ds)){S.pass.push(ds);S.pass.sort();sps()}S.cfm=null;R()}};R()});
