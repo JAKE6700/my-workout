@@ -135,28 +135,30 @@ button{font-family:inherit}
 .prog-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;margin-left:8px}
 .prog-up{background:var(--ad);color:var(--accent);border:1px solid var(--accent)}
 .prog-keep{background:rgba(96,165,250,0.15);color:var(--pull);border:1px solid var(--pull)}
+.vb{background:linear-gradient(135deg,#16261a,#1a1a1a);border:1px solid var(--ad);border-left:3px solid var(--accent);border-radius:10px;padding:10px 14px;margin-bottom:12px}
+.vb-l{font-size:10px;color:var(--dim);font-weight:700;letter-spacing:0.5px;margin-bottom:4px}
+.vb-t{font-size:13px;line-height:1.5;color:#d6e6d6;font-style:italic}
+.vb-r{font-size:11px;color:var(--accent);font-weight:600;text-align:right;margin-top:4px}
 </style>
 </head>
 <body>
 <div id="app"></div>
 <script>
 const DC=[
-{key:"push-a",label:"Push A",type:"weight",sub:"벤치프레스 중심"},
-{key:"legs-a",label:"Legs A",type:"weight",sub:"바벨 스쿼트 중심"},
-{key:"pull-a",label:"Pull A",type:"weight",sub:"고중량 등 + 이두"},
-{key:"rest",label:"러닝 Only",type:"rest",sub:"10km 러닝"},
-{key:"push-b",label:"Push B",type:"weight",sub:"OHP 중심"},
-{key:"legs-b",label:"Legs B",type:"weight",sub:"데드리프트 중심"},
-{key:"pull-b",label:"Pull B",type:"weight",sub:"볼륨 등 + 이두"},
-{key:"rest",label:"러닝 Only",type:"rest",sub:"10km 러닝"}];
+{key:"chest",label:"가슴",type:"weight",sub:"가슴 메인 + 등/이두",run:0},
+{key:"run",label:"러닝 Only",type:"rest",sub:"7km",run:7},
+{key:"back",label:"등",type:"weight",sub:"등 메인 + 어깨/삼두",run:0},
+{key:"run",label:"러닝 Only",type:"rest",sub:"7km",run:7},
+{key:"shoulder",label:"어깨",type:"weight",sub:"어깨 메인 + 약점 보완",run:0},
+{key:"run",label:"러닝 Only",type:"rest",sub:"7km",run:7},
+{key:"legs",label:"하체",type:"weight",sub:"스쿼트 메인",run:0},
+{key:"run",label:"러닝 Only",type:"rest",sub:"7km",run:7}];
 const DW={
-"push-a":[{id:"pa1",name:"바벨 벤치프레스",rest:180,big4:"bench",st:[{w:45,r:"5-8"},{w:50,r:"5-8"},{w:55,r:"5-8"},{w:60,r:"5-8"}]},{id:"pa2",name:"스미스 인클라인 프레스",rest:120,st:[{w:35,r:"8-12"},{w:35,r:"8-12"},{w:35,r:"8-12"}]},{id:"pa3",name:"펙덱 플라이",rest:75,st:[{w:30,r:"12-15"},{w:30,r:"12-15"},{w:30,r:"12-15"}]},{id:"pa4",name:"케이블 레터럴 레이즈",rest:60,st:[{w:7,r:"12-20"},{w:7,r:"12-20"},{w:7,r:"12-20"},{w:7,r:"12-20"}]},{id:"pa5",name:"케이블 푸시다운 (스트레이트 바)",rest:75,st:[{w:25,r:"10-15"},{w:25,r:"10-15"},{w:25,r:"10-15"}]},{id:"pa6",name:"케이블 오버헤드 익스텐션 (로프)",rest:75,st:[{w:20,r:"12-15"},{w:20,r:"12-15"},{w:20,r:"12-15"}]}],
-"push-b":[{id:"pb0",name:"바벨 오버헤드 프레스",rest:150,big4:"ohp",st:[{w:25,r:"6-10"},{w:30,r:"6-10"},{w:32.5,r:"6-10"},{w:35,r:"6-10"}]},{id:"pb1",name:"체스트 프레스 머신",rest:120,st:[{w:40,r:"8-12"},{w:40,r:"8-12"},{w:40,r:"8-12"}]},{id:"pb2",name:"케이블 크로스오버",rest:75,st:[{w:15,r:"12-15"},{w:15,r:"12-15"},{w:15,r:"12-15"}]},{id:"pb3",name:"케이블 레터럴 레이즈",rest:60,st:[{w:7,r:"12-20"},{w:7,r:"12-20"},{w:7,r:"12-20"},{w:7,r:"12-20"}]},{id:"pb4",name:"딥스 머신",rest:90,st:[{w:40,r:"8-12"},{w:40,r:"8-12"},{w:40,r:"8-12"}]},{id:"pb5",name:"케이블 푸시다운 (로프)",rest:75,st:[{w:22.5,r:"12-15"},{w:22.5,r:"12-15"},{w:22.5,r:"12-15"}]}],
-"pull-a":[{id:"la1",name:"바벨 벤트오버 로우",rest:150,st:[{w:60,r:"6-10"},{w:70,r:"6-10"},{w:75,r:"6-10"},{w:80,r:"6-10"}]},{id:"la2",name:"케이블 랫 풀다운",rest:120,st:[{w:45,r:"8-12"},{w:50,r:"8-12"},{w:55,r:"8-12"}]},{id:"la3",name:"시티드 케이블 로우",rest:90,st:[{w:45,r:"10-12"},{w:45,r:"10-12"},{w:45,r:"10-12"}]},{id:"la4",name:"리버스 펙덱 (후면 어깨)",rest:60,st:[{w:15,r:"15-20"},{w:15,r:"15-20"},{w:15,r:"15-20"}]},{id:"la5",name:"케이블 바이셉 컬 (스트레이트 바)",rest:75,st:[{w:25,r:"8-12"},{w:25,r:"8-12"},{w:25,r:"8-12"}]},{id:"la6",name:"케이블 해머 컬 (로프)",rest:75,st:[{w:25,r:"10-15"},{w:25,r:"10-15"},{w:25,r:"10-15"}]}],
-"pull-b":[{id:"lb1",name:"스미스 벤트오버 로우 (언더핸드)",rest:120,st:[{w:50,r:"8-10"},{w:55,r:"8-10"},{w:60,r:"8-10"},{w:60,r:"8-10"}]},{id:"lb2",name:"클로즈그립 랫 풀다운",rest:120,st:[{w:45,r:"10-12"},{w:45,r:"10-12"},{w:45,r:"10-12"}]},{id:"lb3",name:"스트레이트 암 케이블 풀다운",rest:75,st:[{w:20,r:"12-15"},{w:20,r:"12-15"},{w:20,r:"12-15"}]},{id:"lb4",name:"리버스 펙덱 (후면 어깨)",rest:60,st:[{w:15,r:"15-20"},{w:15,r:"15-20"},{w:15,r:"15-20"}]},{id:"lb5",name:"케이블 바이셉 컬 (EZ바)",rest:75,st:[{w:25,r:"10-12"},{w:25,r:"10-12"},{w:25,r:"10-12"}]},{id:"lb6",name:"케이블 리버스 컬",rest:75,st:[{w:20,r:"12-15"},{w:20,r:"12-15"},{w:20,r:"12-15"}]}],
-"legs-a":[{id:"ga1",name:"바벨 백 스쿼트",rest:180,big4:"squat",st:[{w:60,r:"5-8"},{w:75,r:"5-8"},{w:85,r:"5-8"},{w:90,r:"5-8"}]},{id:"ga2",name:"레그 프레스",rest:120,st:[{w:120,r:"10-15"},{w:140,r:"10-15"},{w:160,r:"10-15"}]},{id:"ga3",name:"레그 익스텐션",rest:75,st:[{w:50,r:"12-20"},{w:50,r:"12-20"},{w:50,r:"12-20"}]},{id:"ga4",name:"라잉 레그 컬",rest:90,st:[{w:35,r:"10-15"},{w:35,r:"10-15"},{w:35,r:"10-15"},{w:35,r:"10-15"}]},{id:"ga5",name:"스탠딩 카프 레이즈 (스미스)",rest:60,st:[{w:60,r:"10-15"},{w:60,r:"10-15"},{w:60,r:"10-15"},{w:60,r:"10-15"}]}],
-"legs-b":[{id:"gb0",name:"컨벤셔널 데드리프트",rest:180,big4:"dead",st:[{w:70,r:"5-8"},{w:90,r:"5-8"},{w:105,r:"5-8"},{w:120,r:"5-8"}]},{id:"gb1",name:"스미스 핵 스쿼트",rest:120,st:[{w:40,r:"8-12"},{w:40,r:"8-12"},{w:40,r:"8-12"}]},{id:"gb2",name:"시티드 레그 컬",rest:90,st:[{w:35,r:"10-15"},{w:35,r:"10-15"},{w:35,r:"10-15"},{w:35,r:"10-15"}]},{id:"gb3",name:"레그 익스텐션",rest:75,st:[{w:50,r:"12-20"},{w:50,r:"12-20"},{w:50,r:"12-20"}]},{id:"gb4",name:"시티드 카프 레이즈",rest:60,st:[{w:30,r:"12-20"},{w:30,r:"12-20"},{w:30,r:"12-20"},{w:30,r:"12-20"}]}]};
-const GOALS={bench:{name:"벤치",start:60,target:100,color:"var(--push)",exId:"pa1"},squat:{name:"스쿼트",start:80,target:120,color:"var(--legs)",exId:"ga1"},dead:{name:"데드",start:100,target:150,color:"var(--pull)",exId:"gb0"},ohp:{name:"OHP",start:30,target:40,color:"var(--warn)",exId:"pb0"}};
+"chest":[{id:"pa1",name:"바벨 벤치프레스",sets:4,reps:"5-8",rest:180,defaultW:60,big4:"bench"},{id:"c2",name:"인클라인 체스트 프레스",sets:4,reps:"8-12",rest:120,defaultW:0},{id:"c3",name:"플라이 머신",sets:3,reps:"12-15",rest:90,defaultW:0},{id:"c4",name:"풀업 (등 안쪽)",sets:3,reps:"최대",rest:90,defaultW:0,noWeight:true},{id:"c5",name:"덤벨 컬",sets:3,reps:"10-12",rest:15,defaultW:0},{id:"c6",name:"머신 컬 (컴파운드)",sets:3,reps:"12-15",rest:75,defaultW:0}],
+"back":[{id:"b1",name:"머신 로우",sets:4,reps:"8-10",rest:15,defaultW:0},{id:"b2",name:"랫풀다운 (컴파운드)",sets:4,reps:"10-12",rest:120,defaultW:0},{id:"b3",name:"측면 레이즈",sets:3,reps:"15-20",rest:15,defaultW:0},{id:"b4",name:"후면 레이즈 (컴파운드)",sets:3,reps:"15-20",rest:60,defaultW:0},{id:"b5",name:"오버헤드 익스텐션",sets:3,reps:"10-12",rest:15,defaultW:0},{id:"b6",name:"푸시다운 (컴파운드)",sets:3,reps:"12-15",rest:75,defaultW:0}],
+"shoulder":[{id:"s1",name:"스미스 숄더 프레스",sets:4,reps:"8-12",rest:150,defaultW:0},{id:"s2",name:"케이블 리어 델트",sets:3,reps:"15-20",rest:60,defaultW:0},{id:"s3",name:"딥스 머신 (가슴 하부)",sets:3,reps:"10-12",rest:90,defaultW:0},{id:"s4",name:"시티드 케이블 로우 (등 안쪽)",sets:3,reps:"10-12",rest:90,defaultW:0},{id:"s5",name:"케이블 컬",sets:3,reps:"12-15",rest:60,defaultW:0}],
+"legs":[{id:"ga1",name:"바벨 백 스쿼트",sets:4,reps:"5-8",rest:180,defaultW:80,big4:"squat"},{id:"l2",name:"레그 프레스",sets:4,reps:"10-12",rest:120,defaultW:140},{id:"l3",name:"레그 익스텐션",sets:3,reps:"12-15",rest:75,defaultW:60},{id:"l4",name:"라잉 레그 컬",sets:3,reps:"10-12",rest:75,defaultW:35},{id:"l5",name:"덤벨 변형 푸시업 (가슴 하부)",sets:3,reps:"12-15",rest:60,defaultW:0,noWeight:true},{id:"l6",name:"풀업 (광배)",sets:3,reps:"최대",rest:90,defaultW:0,noWeight:true}]};
+const GOALS={bench:{name:"벤치",start:60,target:100,color:"var(--push)",exId:"pa1"},squat:{name:"스쿼트",start:80,target:120,color:"var(--legs)",exId:"ga1"}};
 const HAB=[{id:"h1",name:"행잉 레그 레이즈",emoji:"🦵",max:100,step:20,color:"var(--push)"},{id:"h2",name:"딥스",emoji:"💪",max:50,step:10,color:"var(--pull)"},{id:"h3",name:"풀업",emoji:"🏋️",max:50,step:10,color:"var(--legs)"},{id:"h4",name:"푸쉬업",emoji:"🫸",max:100,step:20,color:"var(--accent)"},{id:"h5",name:"덤벨컬",emoji:"💪",max:50,step:10,color:"var(--warn)"}];
 const DK=["일","월","화","수","목","금","토"];
 let S={sd:null,sel:new Date(),wo:0,tab:"workout",wt:{},logs:{},bw:[],wks:null,em:false,tEnd:0,tExId:null,tSet:-1,tRest:0,tTo:null,tiv:null,actx:null,setup:false,cfm:null,idc:1000,hab:{},hDate:new Date(),pass:[],sess:{},calMo:new Date().getMonth(),calYr:new Date().getFullYear(),calSel:null,hist:{}};
@@ -164,8 +166,8 @@ const sv=(k,v)=>{try{localStorage.setItem("mw_"+k,JSON.stringify(v))}catch(e){}}
 const ld=k=>{try{const v=localStorage.getItem("mw_"+k);return v?JSON.parse(v):null}catch(e){return null}};
 function init(){const v=ld("ver");if(v!==6){sv("ver",6);sv("config",null)}
 const c=ld("config");if(c?.startDate)S.sd=pD(c.startDate);else S.setup=true;
-S.wt=ld("wt")||{};S.logs=ld("logs")||{};S.bw=ld("bw")||[];S.wks=ld("cwk6")||JSON.parse(JSON.stringify(DW));
-S.idc=ld("idc")||1000;S.hab=ld("habits")||{};S.pass=ld("pass")||[];S.sess=ld("sess")||{};S.hist=ld("hist")||{};S.run=ld("run")||{};if((ld("rv")||0)<1){S.wks=JSON.parse(JSON.stringify(DW));sv("cwk6",S.wks);sv("rv",1)}migWks();
+S.wt=ld("wt")||{};S.logs=ld("logs")||{};S.bw=ld("bw")||[];const RV=2;if(ld("rv")!==RV){sv("rv",RV);sv("cwk6",JSON.parse(JSON.stringify(DW)))}S.wks=ld("cwk6")||JSON.parse(JSON.stringify(DW));
+S.idc=ld("idc")||1000;S.hab=ld("habits")||{};S.pass=ld("pass")||[];S.sess=ld("sess")||{};S.hist=ld("hist")||{};S.run=ld("run")||{};migWks();
 if('Notification'in window&&Notification.permission==='default')try{Notification.requestPermission()}catch(e){}}
 const swk=()=>{sv("cwk6",S.wks);toast("루틴 저장됨")};const swt=()=>sv("wt",S.wt);const slg=()=>sv("logs",S.logs);const sbw=()=>sv("bw",S.bw);const scf=()=>sv("config",{startDate:dS(S.sd)});const shb=()=>sv("habits",S.hab);const sps=()=>sv("pass",S.pass);const sse=()=>sv("sess",S.sess);const shi=()=>sv("hist",S.hist);const srn=()=>sv("run",S.run);
 function migWks(){let ch=false;for(const k in S.wks){for(const ex of S.wks[k]){if(!ex.st){const n=Math.max(1,ex.sets||3);ex.st=Array.from({length:n},()=>({w:ex.defaultW||0,r:String(ex.reps||"10")}));delete ex.sets;delete ex.reps;delete ex.defaultW;ch=true}}}if(ch)sv("cwk6",S.wks)}
@@ -174,7 +176,7 @@ const dS=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${Stri
 const pD=s=>{const[y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d)};
 const dd=(a,b)=>Math.floor((new Date(b.getFullYear(),b.getMonth(),b.getDate())-new Date(a.getFullYear(),a.getMonth(),a.getDate()))/864e5);
 const fR=s=>s>=120?`${s/60}분`:s>=60?`${Math.floor(s/60)}분${s%60?" "+s%60+"초":""}`:`${s}초`;
-const tC=k=>{if(!k)return"var(--dim)";if(k.startsWith("push"))return"var(--push)";if(k.startsWith("pull"))return"var(--pull)";if(k.startsWith("legs"))return"var(--legs)";return"var(--run)"};
+const tC=k=>{if(!k)return"var(--dim)";if(k==="chest")return"var(--push)";if(k==="back")return"var(--pull)";if(k==="shoulder")return"var(--warn)";if(k==="legs")return"var(--legs)";return"var(--run)"};
 function gW(d){if(!S.sd)return null;const df=dd(S.sd,d);if(df<0)return null;const ds=dS(d);if(S.pass.includes(ds))return{type:"pass",label:"PASS",key:"pass",sub:"운동 없음"};const pb=S.pass.filter(p=>p>=dS(S.sd)&&p<ds).length;return DC[(df-pb)%DC.length]}
 function gL(d,wk,eid,si){const k=dS(d)+"_"+wk;return S.logs[k]?.[eid]?.[si]||null}
 function sL(d,wk,eid,si,data){const k=dS(d)+"_"+wk;if(!S.logs[k])S.logs[k]={};if(!S.logs[k][eid])S.logs[k][eid]={};S.logs[k][eid][si]=data;slg()}
@@ -183,7 +185,7 @@ function addH(d,h,s,m){const k=dS(d);if(!S.hab[k])S.hab[k]={};S.hab[k][h]=Math.m
 function undoH(d,h,s){const k=dS(d);if(!S.hab[k])return;S.hab[k][h]=Math.max(0,(S.hab[k][h]||0)-s);shb();R()}
 function getStrk(){let s=0;const d=new Date();for(let i=0;i<365;i++){const c=new Date(d);c.setDate(d.getDate()-i);const k=dS(c);const dd=S.hab[k];if(!dd)break;if(HAB.every(h=>(dd[h.id]||0)>=h.max))s++;else break}return s}
 function getSess(d){return S.sess[dS(d)]||null}
-function getRun(d){const v=S.run[dS(d)];return v==null?10:v}
+function getRun(d){const k=dS(d);if(S.run[k]!=null)return S.run[k];const w=gW(d);return w&&typeof w.run==="number"?w.run:0}
 function startSess(d){S.sess[dS(d)]={start:Date.now(),rests:[],end:null,state:"active"};sse();R()}
 function restSess(d){const s=S.sess[dS(d)];if(!s||s.state!=="active")return;s.rests.push({start:Date.now(),end:null});s.state="resting";sse();R()}
 function resumeSess(d){const s=S.sess[dS(d)];if(!s||s.state!=="resting")return;const r=s.rests[s.rests.length-1];if(r)r.end=Date.now();s.state="active";sse();R()}
@@ -238,14 +240,22 @@ h+=`<div class="tabs"><button class="tab ${S.tab==="workout"?"active":""}" data-
 a.innerHTML=h;bindAll();if(S.tab==="weight")drawC()}
 
 function rGoals(){
-let h=`<div class="goals"><div class="goals-title">🎯 4대 운동 목표</div>`;
+let h=`<div class="goals"><div class="goals-title">🎯 주요 리프트 목표</div>`;
 for(const[k,g]of Object.entries(GOALS)){const cur=getGoalW(k),pct=goalPct(k),done=cur>=g.target;
 h+=`<div class="goal-row"><span class="goal-name">${g.name}</span><div class="goal-bar"><div class="goal-fill" style="width:${pct}%;background:${done?"var(--accent)":g.color}"></div></div><span class="goal-nums">${cur}→${g.target}kg</span><span class="goal-pct" style="color:${done?"var(--accent)":g.color}">${Math.round(pct)}%</span></div>`}
 h+=`</div>`;return h}
 
+const VERSES=[
+{ref:"빌립보서 4:13",text:"내게 능력 주시는 자 안에서 내가 모든 것을 할 수 있느니라"},
+{ref:"이사야 40:31",text:"오직 여호와를 앙망하는 자는 새 힘을 얻으리니 독수리의 날개치며 올라감 같을 것이요 달음박질하여도 곤비치 아니하겠고 걸어가도 피곤치 아니하리로다"},
+{ref:"고린도전서 9:24",text:"운동장에서 달음질하는 자들이 다 달아날찌라도 오직 상 얻는 자는 하나인 줄을 너희가 알지 못하느냐 너희도 얻도록 이와 같이 달음질하라"},
+{ref:"고린도전서 9:27",text:"내가 내 몸을 쳐 복종하게 함은 내가 남에게 전파한 후에 자기가 도리어 버림이 될까 두려워함이로라"},
+{ref:"히브리서 12:1",text:"이러므로 우리에게 구름 같이 둘러싼 허다한 증인들이 있으니 모든 무거운 것과 얽매이기 쉬운 죄를 벗어 버리고 인내로써 우리 앞에 당한 경주를 경주하며"},
+{ref:"디모데전서 4:8",text:"육체의 연습은 약간의 유익이 있으나 경건은 범사에 유익하니 금생과 내생에 약속이 있느니라"}];
+function rVerse(){const doy=Math.floor((Date.now()-new Date(new Date().getFullYear(),0,0))/864e5);const v=VERSES[doy%VERSES.length];return `<div class="vb"><div class="vb-l">📖 오늘의 말씀 · 개역한글</div><div class="vb-t">"${v.text}"</div><div class="vb-r">— ${v.ref}</div></div>`}
 function rWK(){
 const td=new Date(),ts=dS(td),ss=dS(S.sel),isT=ss===ts,wk=gW(S.sel);
-let h=`<div class="hdr"><div><h1>MY WORKOUT</h1><div class="hdr-sub">PPL 8일 사이클 × 매일 10km</div></div><button class="stb" id="bst">시작일</button></div>`;
+let h=`${rVerse()}<div class="hdr"><div><h1>MY WORKOUT</h1><div class="hdr-sub">웨이트·러닝 교대 8일 · 러닝 7km</div></div><button class="stb" id="bst">시작일</button></div>`;
 // Goals
 h+=rGoals();
 const ref=new Date(td);ref.setDate(ref.getDate()+S.wo*7);const dow=(ref.getDay()+6)%7,mon=new Date(ref);mon.setDate(ref.getDate()-dow);
@@ -256,7 +266,7 @@ h+=`</div><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"
 const canP=wk&&S.sd&&dd(S.sd,S.sel)>=0;
 if(canP){if(wk.type==="pass")h+=`<button class="pb pbu" id="unpass">Pass 취소</button>`;else h+=`<button class="pb pbd" id="dopass">Pass</button>`}
 h+=`</div>`;
-if(wk)h+=`<div style="background:#0d2818;border:1px solid var(--accent);border-radius:8px;padding:8px 12px;margin:8px 0;font-size:12px;color:var(--accent);font-weight:600;display:flex;align-items:center;gap:6px">🏃 오늘 러닝 <input class="ri" type="number" inputmode="decimal" step="0.5" value="${getRun(S.sel)}" data-run="${dS(S.sel)}"> km</div>`;
+if(wk&&wk.type==="rest")h+=`<div style="background:#0d2818;border:1px solid var(--accent);border-radius:8px;padding:8px 12px;margin:8px 0;font-size:12px;color:var(--accent);font-weight:600;display:flex;align-items:center;gap:6px">🏃 오늘 러닝 <input class="ri" type="number" inputmode="decimal" step="0.5" value="${getRun(S.sel)}" data-run="${dS(S.sel)}"> km</div>`;
 if(!wk)h+=`<div class="ety">시작일 이전입니다</div>`;
 else if(wk.type==="pass")h+=`<div style="background:var(--card);border:2px dashed var(--border);border-radius:12px;padding:24px;text-align:center;margin-top:12px"><div style="font-size:36px;margin-bottom:8px">⏭️</div><div style="font-size:14px;color:var(--dim)">Pass 처리됨</div></div>`;
 else if(wk.type==="rest")h+=`<div class="rc" style="margin-top:12px"><div style="display:flex;align-items:center;gap:12px;margin-bottom:16px"><div class="wi" style="background:rgba(74,222,128,0.12)">🏃</div><div><div class="wtl" style="color:var(--run)">러닝 Only</div><div class="wsu">${getRun(S.sel)}km · 웨이트 휴식일</div></div></div><div style="background:var(--bg);border-radius:8px;padding:12px"><div style="font-size:14px">AB 슬라이드 · 4×15</div></div></div>`;
@@ -317,11 +327,11 @@ h+=`</div>`;
 if(S.calSel){const ds=S.calSel,wk=gW(pD(ds)),hi=S.hist[ds],se=S.sess[ds];
 h+=`<div class="hist-card"><div class="hist-title">${pD(ds).getMonth()+1}/${pD(ds).getDate()} (${DK[pD(ds).getDay()]})</div>`;
 if(wk)h+=`<div class="hist-detail">예정: <span style="color:${tC(wk.key)};font-weight:700">${wk.label}</span></div>`;
-if(wk&&wk.type!=="pass")h+=`<div class="hist-detail" style="margin-top:4px">러닝: <span style="color:var(--run);font-weight:700">${getRun(pD(ds))}km</span></div>`;
+if(wk&&wk.type==="rest")h+=`<div class="hist-detail" style="margin-top:4px">러닝: <span style="color:var(--run);font-weight:700">${getRun(pD(ds))}km</span></div>`;
 if(hi)h+=`<div class="hist-detail" style="margin-top:4px">실제: <span style="color:var(--accent);font-weight:700">${hi.label}${hi.manual?" (직접입력)":""}</span></div>`;
 if(se?.state==="done"){const el=sessEl(se),rt=sessRt(se);h+=`<div class="hist-detail" style="margin-top:4px">총 ${fmt(el)} (운동 ${fmt(el-rt)} / 휴식 ${fmt(rt)})</div>`}
 h+=`<div style="font-size:11px;color:var(--dim);margin-top:10px;font-weight:600">직접 기록:</div><div class="hist-btns">`;
-["push-a","push-b","pull-a","pull-b","legs-a","legs-b"].forEach(k=>{const lb={"push-a":"Push A","push-b":"Push B","pull-a":"Pull A","pull-b":"Pull B","legs-a":"Legs A","legs-b":"Legs B"};
+["chest","back","shoulder","legs"].forEach(k=>{const lb={"chest":"가슴","back":"등","shoulder":"어깨","legs":"하체"};
 h+=`<button class="hist-btn ${hi?.workout===k?"active":""}" data-hlog="${ds}" data-hwk="${k}">${lb[k]}</button>`});
 h+=`<button class="hist-btn" data-hlog="${ds}" data-hwk="clear" style="${!hi?"opacity:0.3":""}">삭제</button></div></div>`}
 return h}
@@ -394,7 +404,7 @@ document.getElementById("cm-prev")?.addEventListener("click",()=>{S.calMo--;if(S
 document.getElementById("cm-next")?.addEventListener("click",()=>{S.calMo++;if(S.calMo>11){S.calMo=0;S.calYr++}R()});
 document.querySelectorAll("[data-cd]").forEach(el=>el.addEventListener("click",()=>{S.calSel=S.calSel===el.dataset.cd?null:el.dataset.cd;R()}));
 document.querySelectorAll("[data-hlog]").forEach(b=>b.addEventListener("click",()=>{const ds=b.dataset.hlog,wk=b.dataset.hwk;
-if(wk==="clear"){delete S.hist[ds]}else{const lb={"push-a":"Push A","push-b":"Push B","pull-a":"Pull A","pull-b":"Pull B","legs-a":"Legs A","legs-b":"Legs B"};S.hist[ds]={workout:wk,label:lb[wk],manual:true}}shi();R()}))}
+if(wk==="clear"){delete S.hist[ds]}else{const lb={"chest":"가슴","back":"등","shoulder":"어깨","legs":"하체"};S.hist[ds]={workout:wk,label:lb[wk],manual:true}}shi();R()}))}
 init();R()
 </script>
 </body>
